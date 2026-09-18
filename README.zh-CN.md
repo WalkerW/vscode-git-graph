@@ -16,6 +16,7 @@
 - 安装依赖：`npm install`。仓库提交 `package-lock.json`，以避免旧版传递依赖随时间漂移而导致 TypeScript 4.0.2 无法编译。
 - 验证命令：`npm run compile`、`npm test`。当前基线应为 15 个测试套件、1269 个测试全部通过。
 - 本项目源文件采用 CRLF 换行；修改 TypeScript 文件后应运行 ESLint 或项目编译命令，避免混入 LF。
+- Node.js 18 会弃用旧的 `url.parse()`；头像下载已使用 WHATWG `URL` API，启动扩展时不应再出现 `DEP0169` 告警。
 
 ### 文档同步约定
 
