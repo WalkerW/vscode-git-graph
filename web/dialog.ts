@@ -267,7 +267,7 @@ class Dialog {
 		// If the dialog contains a TextRef input, attach event listeners for validation
 		const textRefInput = inputs.findIndex((input) => input.type === DialogInputType.TextRef);
 		if (textRefInput > -1) {
-			let dialogInput = <HTMLInputElement>document.getElementById('dialogInput' + textRefInput), dialogAction = document.getElementById('dialogAction')!;
+			const dialogInput = <HTMLInputElement>document.getElementById('dialogInput' + textRefInput), dialogAction = document.getElementById('dialogAction')!;
 			if (dialogInput.value === '') this.elem!.classList.add(CLASS_DIALOG_NO_INPUT);
 			dialogInput.addEventListener('keyup', () => {
 				if (this.elem === null) return;

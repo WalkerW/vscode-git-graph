@@ -21,7 +21,7 @@ export class AvatarManager extends Disposable {
 	private avatars: AvatarCache;
 	private queue: AvatarRequestQueue;
 	private remoteSourceCache: { [repo: string]: RemoteSource } = {};
-	private interval: NodeJS.Timer | null = null;
+	private interval: ReturnType<typeof setTimeout> | null = null;
 
 	private githubTimeout: number = 0;
 	private gitLabTimeout: number = 0;
@@ -81,7 +81,7 @@ export class AvatarManager extends Disposable {
 	public fetchAvatarImage(email: string, repo: string, remote: string | null, commits: string[]) {
 		if (typeof this.avatars[email] !== 'undefined') {
 			// Avatar exists in the cache
-			let t = (new Date()).getTime();
+			const t = (new Date()).getTime();
 			if (this.avatars[email].timestamp < t - 1209600000 || (this.avatars[email].identicon && this.avatars[email].timestamp < t - 345600000)) {
 				// Refresh avatar after 14 days, or if an avatar couldn't previously be found after 4 days
 				this.queue.add(email, repo, remote, commits, false);
@@ -146,10 +146,10 @@ export class AvatarManager extends Disposable {
 	 */
 	private async fetchAvatarsInterval() {
 		if (this.queue.hasItems()) {
-			let avatarRequest = this.queue.takeItem();
+			const avatarRequest = this.queue.takeItem();
 			if (avatarRequest === null) return; // No avatar can be checked at the current time
 
-			let remoteSource = await this.getRemoteSource(avatarRequest); // Fetch the remote source of the avatar
+			const remoteSource = await this.getRemoteSource(avatarRequest); // Fetch the remote source of the avatar
 			switch (remoteSource.type) {
 				case 'github':
 					this.fetchFromGithub(avatarRequest, remoteSource.owner, remoteSource.repo);
@@ -179,7 +179,7 @@ export class AvatarManager extends Disposable {
 			// Fetch the remote repo source
 			let remoteSource: RemoteSource = { type: 'gravatar' };
 			if (avatarRequest.remote !== null) {
-				let remoteUrl = await this.dataSource.getRemoteUrl(avatarRequest.repo, avatarRequest.remote);
+				const remoteUrl = await this.dataSource.getRemoteUrl(avatarRequest.repo, avatarRequest.remote);
 				if (remoteUrl !== null) {
 					// Depending on the domain of the remote repo source, determine the type of source it is
 					let match;
@@ -202,7 +202,7 @@ export class AvatarManager extends Disposable {
 	 * @param repo The repository that the avatar is used in.
 	 */
 	private fetchFromGithub(avatarRequest: AvatarRequestItem, owner: string, repo: string) {
-		let t = (new Date()).getTime();
+		const t = (new Date()).getTime();
 		if (t < this.githubTimeout) {
 			// Defer request until after timeout
 			this.queue.addItem(avatarRequest, this.githubTimeout, false);
@@ -241,10 +241,10 @@ export class AvatarManager extends Disposable {
 				}
 
 				if (res.statusCode === 200) { // Success
-					let commit: any = JSON.parse(respBody);
+					const commit: any = JSON.parse(respBody);
 					if (commit.author && commit.author.avatar_url) { // Avatar url found
 						const avatarUrl = <string>commit.author.avatar_url;
-						let img = await this.downloadAvatarImage(avatarRequest.email, avatarUrl + (avatarUrl.includes('?') ? '&' : '?') + 'size=162');
+						const img = await this.downloadAvatarImage(avatarRequest.email, avatarUrl + (avatarUrl.includes('?') ? '&' : '?') + 'size=162');
 						if (img !== null) {
 							this.saveAvatar(avatarRequest.email, img, false);
 						} else {
@@ -277,7 +277,7 @@ export class AvatarManager extends Disposable {
 	 * @param avatarRequest The avatar request to fetch.
 	 */
 	private fetchFromGitLab(avatarRequest: AvatarRequestItem) {
-		let t = (new Date()).getTime();
+		const t = (new Date()).getTime();
 		if (t < this.gitLabTimeout) {
 			// Defer request until after timeout
 			this.queue.addItem(avatarRequest, this.gitLabTimeout, false);
@@ -312,9 +312,9 @@ export class AvatarManager extends Disposable {
 				}
 
 				if (res.statusCode === 200) { // Success
-					let users: any = JSON.parse(respBody);
+					const users: any = JSON.parse(respBody);
 					if (users.length > 0 && users[0].avatar_url) { // Avatar url found
-						let img = await this.downloadAvatarImage(avatarRequest.email, users[0].avatar_url);
+						const img = await this.downloadAvatarImage(avatarRequest.email, users[0].avatar_url);
 						if (img !== null) {
 							this.saveAvatar(avatarRequest.email, img, false);
 						} else {
@@ -390,11 +390,11 @@ export class AvatarManager extends Disposable {
 				headers: { 'User-Agent': 'vscode-git-graph' },
 				agent: false, timeout: 15000
 			}, (res) => {
-				let imageBufferArray: Buffer[] = [];
+				const imageBufferArray: Buffer[] = [];
 				res.on('data', (chunk: Buffer) => { imageBufferArray.push(chunk); });
 				res.on('end', () => {
 					if (res.statusCode === 200) { // If success response, save the image to the avatar folder
-						let format = res.headers['content-type']!.split('/')[1];
+						const format = res.headers['content-type']!.split('/')[1];
 						fs.writeFile(this.avatarStorageFolder + '/' + hash + '.' + format, Buffer.concat(imageBufferArray), err => {
 							complete(err ? null : hash + '.' + format);
 						});

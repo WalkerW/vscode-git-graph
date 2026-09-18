@@ -483,8 +483,8 @@ class SettingsWidget {
 
 					let config: GG.DeepWriteable<GG.PullRequestConfig>;
 					if (this.repo.pullRequestConfig === null) {
-						let originIndex = this.config.remotes.findIndex((remote) => remote.name === 'origin');
-						let sourceRemoteUrl = this.config.remotes[originIndex > -1 ? originIndex : 0].url;
+						const originIndex = this.config.remotes.findIndex((remote) => remote.name === 'origin');
+						const sourceRemoteUrl = this.config.remotes[originIndex > -1 ? originIndex : 0].url;
 						let provider: GG.PullRequestProvider;
 						if (sourceRemoteUrl !== null) {
 							if (sourceRemoteUrl.match(/^(https?:\/\/|git@)[^/]*github/) !== null) {
@@ -594,7 +594,7 @@ class SettingsWidget {
 			{ type: DialogInputType.Text, name: 'Issue URL', default: defaultIssueUrl !== null ? defaultIssueUrl : '', placeholder: null, info: 'The issue\'s URL in your issue tracking system, with placeholders ($1, $2, etc.) for the groups captured ( ) in the "Issue Regex".' },
 			{ type: DialogInputType.Checkbox, name: 'Use Globally', value: defaultUseGlobally, info: 'Use the "Issue Regex" and "Issue URL" for all repositories by default (it can be overridden per repository). Note: "Use Globally" is only suitable if identical Issue Linking applies to the majority of your repositories (e.g. when using JIRA or Pivotal Tracker).' }
 		], 'Save', (values) => {
-			let issueRegex = (<string>values[0]).trim(), issueUrl = (<string>values[1]).trim(), useGlobally = <boolean>values[2];
+			const issueRegex = (<string>values[0]).trim(), issueUrl = (<string>values[1]).trim(), useGlobally = <boolean>values[2];
 			let regExpParseError = null;
 			try {
 				if (issueRegex.indexOf('(') === -1 || issueRegex.indexOf(')') === -1) {
@@ -603,7 +603,7 @@ class SettingsWidget {
 					regExpParseError = null;
 				}
 			} catch (e) {
-				regExpParseError = e.message;
+				regExpParseError = e instanceof Error ? e.message : String(e);
 			}
 			if (regExpParseError !== null) {
 				dialog.showError('Invalid Issue Regex', regExpParseError, 'Go Back', () => {
@@ -626,8 +626,8 @@ class SettingsWidget {
 	private showCreatePullRequestIntegrationDialog1(config: GG.DeepWriteable<GG.PullRequestConfig>) {
 		if (this.config === null) return;
 
-		let originIndex = this.config.remotes.findIndex((remote) => remote.name === 'origin');
-		let upstreamIndex = this.config.remotes.findIndex((remote) => remote.name === 'upstream');
+		const originIndex = this.config.remotes.findIndex((remote) => remote.name === 'origin');
+		const upstreamIndex = this.config.remotes.findIndex((remote) => remote.name === 'upstream');
 		let sourceRemoteIndex = this.config.remotes.findIndex((remote) => remote.name === config.sourceRemote);
 		let destRemoteIndex = this.config.remotes.findIndex((remote) => remote.name === config.destRemote);
 
@@ -639,12 +639,12 @@ class SettingsWidget {
 		}
 
 		let defaultProvider = config.provider.toString();
-		let providerOptions = [
+		const providerOptions = [
 			{ name: 'Bitbucket', value: (GG.PullRequestProvider.Bitbucket).toString() },
 			{ name: 'GitHub', value: (GG.PullRequestProvider.GitHub).toString() },
 			{ name: 'GitLab', value: (GG.PullRequestProvider.GitLab).toString() }
 		];
-		let providerTemplateLookup: { [name: string]: string } = {};
+		const providerTemplateLookup: { [name: string]: string } = {};
 		initialState.config.customPullRequestProviders.forEach((provider) => {
 			providerOptions.push({ name: provider.name, value: (providerOptions.length + 1).toString() });
 			providerTemplateLookup[provider.name] = provider.templateUrl;
@@ -659,8 +659,8 @@ class SettingsWidget {
 		}
 		providerOptions.sort((a, b) => a.name.localeCompare(b.name));
 
-		let sourceRemoteOptions = this.config.remotes.map((remote, index) => ({ name: remote.name, value: index.toString() }));
-		let destRemoteOptions = sourceRemoteOptions.map((option) => option);
+		const sourceRemoteOptions = this.config.remotes.map((remote, index) => ({ name: remote.name, value: index.toString() }));
+		const destRemoteOptions = sourceRemoteOptions.map((option) => option);
 		destRemoteOptions.push({ name: 'Not a remote', value: '-1' });
 
 		dialog.showForm('Configure "Pull Request Creation" Integration (Step&nbsp;1/2)', [

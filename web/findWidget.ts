@@ -38,7 +38,7 @@ class FindWidget {
 		document.body.appendChild(this.widgetElem);
 
 		this.inputElem = <HTMLInputElement>document.getElementById('findInput')!;
-		let keyupTimeout: NodeJS.Timer | null = null;
+		let keyupTimeout: ReturnType<typeof setTimeout> | null = null;
 		this.inputElem.addEventListener('keyup', (e) => {
 			if ((e.keyCode ? e.keyCode === 13 : e.key === 'Enter') && this.text !== '') {
 				if (e.shiftKey) {
@@ -224,7 +224,7 @@ class FindWidget {
 			} catch (e) {
 				findPattern = null;
 				findGlobalPattern = null;
-				this.widgetElem.setAttribute(ATTR_ERROR, e.message);
+				this.widgetElem.setAttribute(ATTR_ERROR, e instanceof Error ? e.message : String(e));
 			}
 			if (findPattern !== null && findGlobalPattern !== null) {
 				let commitElems = getCommitElems(), j = 0, commit, zeroLengthMatch = false;
@@ -233,7 +233,7 @@ class FindWidget {
 				const commits = this.view.getCommits();
 				for (let i = 0; i < commits.length; i++) {
 					commit = commits[i];
-					let branchLabels = getBranchLabels(commit.heads, commit.remotes);
+					const branchLabels = getBranchLabels(commit.heads, commit.remotes);
 					if (commit.hash !== UNCOMMITTED && (
 						(colVisibility.author && findPattern.test(commit.author))
 						|| (colVisibility.commit && (commit.hash.search(findPattern) === 0 || findPattern.test(abbrevCommit(commit.hash))))
@@ -244,7 +244,7 @@ class FindWidget {
 						|| (colVisibility.date && findPattern.test(formatShortDate(commit.date).formatted))
 						|| (commit.stash !== null && findPattern.test(commit.stash.selector))
 					)) {
-						let idStr = i.toString();
+						const idStr = i.toString();
 						while (j < commitElems.length && commitElems[j].dataset.id !== idStr) j++;
 						if (j === commitElems.length) continue;
 
@@ -291,7 +291,7 @@ class FindWidget {
 						}
 						if (colVisibility.commit && commit.hash.search(findPattern) === 0 && !findPattern.test(abbrevCommit(commit.hash)) && textElems.length > 0) {
 							// The commit matches on more than the abbreviated commit, so the commit should be highlighted
-							let commitNode = textElems[textElems.length - 1]; // Commit is always the last column if it is visible
+							const commitNode = textElems[textElems.length - 1]; // Commit is always the last column if it is visible
 							commitNode.parentNode!.replaceChild(FindWidget.createMatchElem(commitNode.textContent!), commitNode);
 						}
 						if (zeroLengthMatch) break;
@@ -314,7 +314,7 @@ class FindWidget {
 		if (this.matches.length > 0) {
 			newPos = 0;
 			if (goToCommitHash !== null) {
-				let pos = this.matches.findIndex(match => match.hash === goToCommitHash);
+				const pos = this.matches.findIndex(match => match.hash === goToCommitHash);
 				if (pos > -1) newPos = pos;
 			}
 		}

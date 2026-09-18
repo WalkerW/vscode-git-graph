@@ -17,7 +17,7 @@ class Dropdown {
 	private lastSelected: number = 0; // Only used when multipleAllowed === false
 	private dropdownVisible: boolean = false;
 	private lastClicked: number = 0;
-	private doubleClickTimeout: NodeJS.Timer | null = null;
+	private doubleClickTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	private readonly elem: HTMLElement;
 	private readonly currentValueElem: HTMLDivElement;
@@ -44,7 +44,7 @@ class Dropdown {
 		this.menuElem = document.createElement('div');
 		this.menuElem.className = 'dropdownMenu';
 
-		let filter = this.menuElem.appendChild(document.createElement('div'));
+		const filter = this.menuElem.appendChild(document.createElement('div'));
 		filter.className = 'dropdownFilter';
 
 		this.filterInput = filter.appendChild(document.createElement('input'));
@@ -263,7 +263,7 @@ class Dropdown {
 	 * @returns The array of the selected options.
 	 */
 	private getSelectedOptions(names: boolean) {
-		let selected = [];
+		const selected = [];
 		if (this.multipleAllowed && this.optionsSelected[0]) {
 			// Note: Show All is always the first option (0 index) when multiple selected items are allowed
 			return [names ? this.options[0].name : this.options[0].value];
@@ -281,7 +281,7 @@ class Dropdown {
 	private onOptionClick(option: number) {
 		// Note: Show All is always the first option (0 index) when multiple selected items are allowed
 		let change = false;
-		let doubleClick = this.doubleClickTimeout !== null && this.lastClicked === option;
+		const doubleClick = this.doubleClickTimeout !== null && this.lastClicked === option;
 		if (this.doubleClickTimeout !== null) this.clearDoubleClickTimeout();
 
 		if (doubleClick) {
@@ -338,7 +338,7 @@ class Dropdown {
 
 		if (change) {
 			// If a change has occurred, re-render the dropdown elements
-			let menuScroll = this.menuElem.scrollTop;
+			const menuScroll = this.menuElem.scrollTop;
 			this.render();
 			if (this.dropdownVisible) this.menuElem.scroll(0, menuScroll);
 		}

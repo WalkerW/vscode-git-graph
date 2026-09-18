@@ -358,7 +358,7 @@ class Graph {
 
 	private tooltipId: number = -1;
 	private tooltipElem: HTMLElement | null = null;
-	private tooltipTimeout: NodeJS.Timer | null = null;
+	private tooltipTimeout: ReturnType<typeof setTimeout> | null = null;
 	private tooltipVertex: HTMLElement | null = null;
 
 	constructor(id: string, viewElem: HTMLElement, config: GG.GraphConfig, muteConfig: GG.MuteCommitsConfig) {
@@ -369,16 +369,16 @@ class Graph {
 		const elem = document.getElementById(id)!;
 		this.contentElem = elem.parentElement!;
 		this.svg = document.createElementNS(SVG_NAMESPACE, 'svg');
-		let defs = this.svg.appendChild(document.createElementNS(SVG_NAMESPACE, 'defs'));
+		const defs = this.svg.appendChild(document.createElementNS(SVG_NAMESPACE, 'defs'));
 
-		let linearGradient = defs.appendChild(document.createElementNS(SVG_NAMESPACE, 'linearGradient'));
+		const linearGradient = defs.appendChild(document.createElementNS(SVG_NAMESPACE, 'linearGradient'));
 		linearGradient.setAttribute('id', 'GraphGradient');
 		this.gradientStop1 = linearGradient.appendChild(document.createElementNS(SVG_NAMESPACE, 'stop'));
 		this.gradientStop1.setAttribute('stop-color', 'white');
 		this.gradientStop2 = linearGradient.appendChild(document.createElementNS(SVG_NAMESPACE, 'stop'));
 		this.gradientStop2.setAttribute('stop-color', 'black');
 
-		let mask = defs.appendChild(document.createElementNS(SVG_NAMESPACE, 'mask'));
+		const mask = defs.appendChild(document.createElementNS(SVG_NAMESPACE, 'mask'));
 		mask.setAttribute('id', 'GraphMask');
 		this.maskRect = mask.appendChild(document.createElementNS(SVG_NAMESPACE, 'rect'));
 		this.maskRect.setAttribute('fill', 'url(#GraphGradient)');
@@ -407,7 +407,7 @@ class Graph {
 		}
 		for (i = 0; i < commits.length; i++) {
 			for (j = 0; j < commits[i].parents.length; j++) {
-				let parentHash = commits[i].parents[j];
+				const parentHash = commits[i].parents[j];
 				if (typeof commitLookup[parentHash] === 'number') {
 					// Parent is the <commitLookup[parentHash]>th vertex
 					this.vertices[i].addParent(this.vertices[commitLookup[parentHash]]);
@@ -512,7 +512,7 @@ class Graph {
 				return null;
 			}
 
-			let children = v.getChildren();
+			const children = v.getChildren();
 			if (children.length > 1) {
 				// Commit has multiple children - fails topological test
 				return null;
@@ -532,13 +532,13 @@ class Graph {
 	}
 
 	private getAllChildren(i: number) {
-		let visited: { [id: string]: number } = {};
+		const visited: { [id: string]: number } = {};
 		const rec = (vertex: Vertex) => {
 			const idStr = vertex.id.toString();
 			if (typeof visited[idStr] !== 'undefined') return;
 
 			visited[idStr] = vertex.id;
-			let children = vertex.getChildren();
+			const children = vertex.getChildren();
 			for (let i = 0; i < children.length; i++) rec(children[i]);
 		};
 		rec(this.vertices[i]);
@@ -563,7 +563,7 @@ class Graph {
 
 		// Mute any commits that are not ancestors of the commit head if the Extension Setting is enabled, and the head commit is in the graph
 		if (this.muteConfig.commitsNotAncestorsOfHead && currentHash !== null && typeof this.commitLookup[currentHash] === 'number') {
-			let ancestor: boolean[] = [];
+			const ancestor: boolean[] = [];
 			for (let i = 0; i < this.commits.length; i++) {
 				ancestor[i] = false;
 			}
@@ -573,7 +573,7 @@ class Graph {
 				if (vertex.id === NULL_VERTEX_ID || ancestor[vertex.id]) return;
 				ancestor[vertex.id] = true;
 
-				let parents = vertex.getParents();
+				const parents = vertex.getParents();
 				for (let i = 0; i < parents.length; i++) rec(parents[i]);
 			};
 			rec(this.vertices[this.commitLookup[currentHash]]);
@@ -688,14 +688,14 @@ class Graph {
 
 	private applyMaxWidth(contentWidth: number) {
 		this.setSvgWidth(contentWidth);
-		let offset1 = this.maxWidth > -1 ? (this.maxWidth - 12) / contentWidth : 1;
-		let offset2 = this.maxWidth > -1 ? this.maxWidth / contentWidth : 1;
+		const offset1 = this.maxWidth > -1 ? (this.maxWidth - 12) / contentWidth : 1;
+		const offset2 = this.maxWidth > -1 ? this.maxWidth / contentWidth : 1;
 		this.gradientStop1.setAttribute('offset', offset1.toString());
 		this.gradientStop2.setAttribute('offset', offset2.toString());
 	}
 
 	private setSvgWidth(contentWidth: number) {
-		let width = this.maxWidth > -1 ? Math.min(contentWidth, this.maxWidth) : contentWidth;
+		const width = this.maxWidth > -1 ? Math.min(contentWidth, this.maxWidth) : contentWidth;
 		this.svg.setAttribute('width', width.toString());
 	}
 
@@ -729,7 +729,7 @@ class Graph {
 			}
 		} else {
 			// Branch is normal
-			let branch = new Branch(this.getAvailableColour(startAt));
+			const branch = new Branch(this.getAvailableColour(startAt));
 			vertex.addToBranch(branch, lastPoint.x);
 			vertex.registerUnavailablePoint(lastPoint.x, vertex, branch);
 			for (i = startAt + 1; i < this.vertices.length; i++) {
@@ -742,7 +742,7 @@ class Graph {
 				if (parentVertex === curVertex) {
 					// The parent of <vertex> has been reached, progress <vertex> and <parentVertex> to continue building the branch
 					vertex.registerParentProcessed();
-					let parentVertexOnBranch = !parentVertex.isNotOnBranch();
+					const parentVertexOnBranch = !parentVertex.isNotOnBranch();
 					parentVertex.addToBranch(branch, curPoint.x);
 					vertex = parentVertex;
 					parentVertex = vertex.getNextParent();
@@ -788,7 +788,7 @@ class Graph {
 		if (id < this.commits.length && this.commits[id].hash !== UNCOMMITTED) { // Only show tooltip for commits (not the uncommitted changes)
 			this.tooltipTimeout = setTimeout(() => {
 				this.tooltipTimeout = null;
-				let vertexScreenY = vertexElem.getBoundingClientRect().top + 4; // Get center of the circle
+				const vertexScreenY = vertexElem.getBoundingClientRect().top + 4; // Get center of the circle
 				if (vertexScreenY >= 5 && vertexScreenY <= this.viewElem.clientHeight - 5) {
 					// Vertex is completely visible on the screen (not partially off)
 					this.tooltipVertex = vertexElem;
@@ -812,7 +812,7 @@ class Graph {
 		const children = this.getAllChildren(id);
 		let heads: string[] = [], remotes: GG.GitCommitRemote[] = [], stashes: string[] = [], tags: string[] = [], childrenIncludesHead = false;
 		for (let i = 0; i < children.length; i++) {
-			let commit = this.commits[children[i]];
+			const commit = this.commits[children[i]];
 			for (let j = 0; j < commit.heads.length; j++) heads.push(commit.heads[j]);
 			for (let j = 0; j < commit.remotes.length; j++) remotes.push(commit.remotes[j]);
 			for (let j = 0; j < commit.tags.length; j++) tags.push(commit.tags[j].name);
@@ -830,20 +830,20 @@ class Graph {
 			html += '<div class="graphTooltipSection">This commit is ' + (childrenIncludesHead ? '' : '<b><i>not</i></b> ') + 'included in <span class="graphTooltipRef">HEAD</span></div>';
 		}
 		if (heads.length > 0 || remotes.length > 0) {
-			let branchLabels = getBranchLabels(heads, remotes), htmlRefs: string[] = [];
+			const branchLabels = getBranchLabels(heads, remotes), htmlRefs: string[] = [];
 			branchLabels.heads.forEach((head) => {
-				let html = head.remotes.reduce((prev, remote) => prev + '<span class="graphTooltipCombinedRef">' + escapeHtml(remote) + '</span>', '');
+				const html = head.remotes.reduce((prev, remote) => prev + '<span class="graphTooltipCombinedRef">' + escapeHtml(remote) + '</span>', '');
 				htmlRefs.push('<span class="graphTooltipRef">' + escapeHtml(head.name) + html + '</span>');
 			});
 			branchLabels.remotes.forEach((remote) => htmlRefs.push('<span class="graphTooltipRef">' + escapeHtml(remote.name) + '</span>'));
 			html += '<div class="graphTooltipSection">Branches: ' + getLimitedRefs(htmlRefs) + '</div>';
 		}
 		if (tags.length > 0) {
-			let htmlRefs = tags.map((tag) => '<span class="graphTooltipRef">' + escapeHtml(tag) + '</span>');
+			const htmlRefs = tags.map((tag) => '<span class="graphTooltipRef">' + escapeHtml(tag) + '</span>');
 			html += '<div class="graphTooltipSection">Tags: ' + getLimitedRefs(htmlRefs) + '</div>';
 		}
 		if (stashes.length > 0) {
-			let htmlRefs = stashes.map((stash) => '<span class="graphTooltipRef">' + escapeHtml(stash) + '</span>');
+			const htmlRefs = stashes.map((stash) => '<span class="graphTooltipRef">' + escapeHtml(stash) + '</span>');
 			html += '<div class="graphTooltipSection">Stashes: ' + getLimitedRefs(htmlRefs) + '</div>';
 		}
 
@@ -871,7 +871,7 @@ class Graph {
 		this.contentElem.appendChild(anchor);
 		this.tooltipElem = anchor;
 
-		let tooltipRect = content.getBoundingClientRect();
+		const tooltipRect = content.getBoundingClientRect();
 		let relativeOffset = -tooltipRect.height / 2; // Center the tooltip vertically on the vertex
 		if (vertexScreenY + relativeOffset + tooltipRect.height > this.viewElem.clientHeight - 4) {
 			// Not enough height below the vertex to fit the vertex, shift it up.

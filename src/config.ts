@@ -97,8 +97,8 @@ class Config {
 	 * Get the value of the `git-graph.customBranchGlobPatterns` Extension Setting.
 	 */
 	get customBranchGlobPatterns(): CustomBranchGlobPattern[] {
-		let inPatterns = this.config.get('customBranchGlobPatterns', <any[]>[]);
-		let outPatterns: CustomBranchGlobPattern[] = [];
+		const inPatterns = this.config.get('customBranchGlobPatterns', <any[]>[]);
+		const outPatterns: CustomBranchGlobPattern[] = [];
 		for (let i = 0; i < inPatterns.length; i++) {
 			if (typeof inPatterns[i].name === 'string' && typeof inPatterns[i].glob === 'string') {
 				outPatterns.push({ name: inPatterns[i].name, glob: '--glob=' + inPatterns[i].glob });
@@ -111,8 +111,8 @@ class Config {
 	 * Get the value of the `git-graph.customEmojiShortcodeMappings` Extension Setting.
 	 */
 	get customEmojiShortcodeMappings(): CustomEmojiShortcodeMapping[] {
-		let inMappings = this.config.get('customEmojiShortcodeMappings', <any[]>[]);
-		let outMappings: CustomEmojiShortcodeMapping[] = [];
+		const inMappings = this.config.get('customEmojiShortcodeMappings', <any[]>[]);
+		const outMappings: CustomEmojiShortcodeMapping[] = [];
 		for (let i = 0; i < inMappings.length; i++) {
 			if (typeof inMappings[i].shortcode === 'string' && typeof inMappings[i].emoji === 'string') {
 				outMappings.push({ shortcode: inMappings[i].shortcode, emoji: inMappings[i].emoji });
@@ -125,7 +125,7 @@ class Config {
 	 * Get the value of the `git-graph.customPullRequestProviders` Extension Setting.
 	 */
 	get customPullRequestProviders(): CustomPullRequestProvider[] {
-		let providers = this.config.get('customPullRequestProviders', <any[]>[]);
+		const providers = this.config.get('customPullRequestProviders', <any[]>[]);
 		return Array.isArray(providers)
 			? providers
 				.filter((provider) => typeof provider.name === 'string' && typeof provider.templateUrl === 'string')
@@ -160,7 +160,7 @@ class Config {
 	 * Get the value of the `git-graph.defaultColumnVisibility` Extension Setting.
 	 */
 	get defaultColumnVisibility(): DefaultColumnVisibility {
-		let obj: any = this.config.get('defaultColumnVisibility', {});
+		const obj: any = this.config.get('defaultColumnVisibility', {});
 		if (typeof obj === 'object' && obj !== null && typeof obj['Date'] === 'boolean' && typeof obj['Author'] === 'boolean' && typeof obj['Commit'] === 'boolean') {
 			return { author: obj['Author'], commit: obj['Commit'], date: obj['Date'] };
 		} else {
@@ -172,9 +172,9 @@ class Config {
 	 * Get the value of the `git-graph.dialog.*` Extension Settings.
 	 */
 	get dialogDefaults(): DialogDefaults {
-		let resetCommitMode = this.config.get<string>('dialog.resetCurrentBranchToCommit.mode', 'Mixed');
-		let resetUncommittedMode = this.config.get<string>('dialog.resetUncommittedChanges.mode', 'Mixed');
-		let refInputSpaceSubstitution = this.config.get<string>('dialog.general.referenceInputSpaceSubstitution', 'None');
+		const resetCommitMode = this.config.get<string>('dialog.resetCurrentBranchToCommit.mode', 'Mixed');
+		const resetUncommittedMode = this.config.get<string>('dialog.resetUncommittedChanges.mode', 'Mixed');
+		const refInputSpaceSubstitution = this.config.get<string>('dialog.general.referenceInputSpaceSubstitution', 'None');
 
 		return {
 			addTag: {
@@ -623,7 +623,7 @@ export function getConfig(repo?: string) {
 function mergeConfigObjects(base: { [key: string]: any }, user: { [key: string]: any }) {
 	if (typeof base !== typeof user) return;
 
-	let keys = Object.keys(base);
+	const keys = Object.keys(base);
 	for (let i = 0; i < keys.length; i++) {
 		if (typeof base[keys[i]] === 'object') {
 			if (typeof user[keys[i]] === 'object') {

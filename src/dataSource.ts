@@ -1,6 +1,6 @@
 import * as cp from 'child_process';
 import * as fs from 'fs';
-import { decode, encodingExists } from 'iconv-lite';
+import iconv = require('iconv-lite');
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { AskpassEnvironment, AskpassManager } from './askpass/askpassManager';
@@ -168,7 +168,7 @@ export class DataSource extends Disposable {
 			this.getRefs(repo, showRemoteBranches, config.showRemoteHeads, hideRemotes).then((refData: GitRefData) => refData, (errorMessage: string) => errorMessage)
 		]).then(async (results) => {
 			let commits: GitCommitRecord[] = results[0], refData: GitRefData | string = results[1], i;
-			let moreCommitsAvailable = commits.length === maxCommits + 1;
+			const moreCommitsAvailable = commits.length === maxCommits + 1;
 			if (moreCommitsAvailable) commits.pop();
 
 			// It doesn't matter if getRefs() was rejected if no commits exist
@@ -195,8 +195,8 @@ export class DataSource extends Disposable {
 				}
 			}
 
-			let commitNodes: DeepWriteable<GitCommit>[] = [];
-			let commitLookup: { [hash: string]: number } = {};
+			const commitNodes: DeepWriteable<GitCommit>[] = [];
+			const commitLookup: { [hash: string]: number } = {};
 
 			for (i = 0; i < commits.length; i++) {
 				commitLookup[commits[i].hash] = i;
@@ -204,7 +204,7 @@ export class DataSource extends Disposable {
 			}
 
 			/* Insert Stashes */
-			let toAdd: { index: number, data: GitStash }[] = [];
+			const toAdd: { index: number, data: GitStash }[] = [];
 			for (i = 0; i < stashes.length; i++) {
 				if (typeof commitLookup[stashes[i].hash] === 'number') {
 					commitNodes[commitLookup[stashes[i].hash]].stash = {
@@ -218,7 +218,7 @@ export class DataSource extends Disposable {
 			}
 			toAdd.sort((a, b) => a.index !== b.index ? a.index - b.index : b.data.date - a.data.date);
 			for (i = toAdd.length - 1; i >= 0; i--) {
-				let stash = toAdd[i].data;
+				const stash = toAdd[i].data;
 				commitNodes.splice(toAdd[i].index, 0, {
 					hash: stash.hash,
 					parents: [stash.baseHash],
@@ -254,8 +254,8 @@ export class DataSource extends Disposable {
 			/* Annotate Remotes */
 			for (i = 0; i < refData.remotes.length; i++) {
 				if (typeof commitLookup[refData.remotes[i].hash] === 'number') {
-					let name = refData.remotes[i].name;
-					let remote = remotes.find(remote => name.startsWith(remote + '/'));
+					const name = refData.remotes[i].name;
+					const remote = remotes.find(remote => name.startsWith(remote + '/'));
 					commitNodes[commitLookup[refData.remotes[i].hash]].remotes.push({ name: name, remote: remote ? remote : null });
 				}
 			}
@@ -421,7 +421,7 @@ export class DataSource extends Disposable {
 	 * @returns The comparison details.
 	 */
 	public getCommitComparison(repo: string, fromHash: string, toHash: string): Promise<GitCommitComparisonData> {
-		return Promise.all<DiffNameStatusRecord[], DiffNumStatRecord[], GitStatusFiles | null>([
+		return Promise.all([
 			this.getDiffNameStatus(repo, fromHash, toHash === UNCOMMITTED ? '' : toHash),
 			this.getDiffNumStat(repo, fromHash, toHash === UNCOMMITTED ? '' : toHash),
 			toHash === UNCOMMITTED ? this.getStatus(repo) : Promise.resolve(null)
@@ -445,7 +445,7 @@ export class DataSource extends Disposable {
 	public getCommitFile(repo: string, commitHash: string, filePath: string) {
 		return this._spawnGit(['show', commitHash + ':' + filePath], repo, stdout => {
 			const encoding = getConfig(repo).fileEncoding;
-			return decode(stdout, encodingExists(encoding) ? encoding : 'utf8');
+			return iconv.decode(stdout, iconv.encodingExists(encoding) ? encoding : 'utf8');
 		});
 	}
 
@@ -538,7 +538,7 @@ export class DataSource extends Disposable {
 	public getSubmodules(repo: string) {
 		return new Promise<string[]>(resolve => {
 			fs.readFile(path.join(repo, '.gitmodules'), { encoding: 'utf8' }, async (err, data) => {
-				let submodules: string[] = [];
+				const submodules: string[] = [];
 				if (!err) {
 					let lines = data.split(EOL_REGEX), inSubmoduleSection = false, match;
 					const section = /^\s*\[.*\]\s*$/, submodule = /^\s*\[submodule "([^"]+)"\]\s*$/, pathProp = /^\s*path\s+=\s+(.*)$/;
@@ -550,7 +550,7 @@ export class DataSource extends Disposable {
 						}
 
 						if (inSubmoduleSection && (match = lines[i].match(pathProp)) !== null) {
-							let root = await this.repoRoot(getPathFromUri(vscode.Uri.file(path.join(repo, getPathFromStr(match[1])))));
+							const root = await this.repoRoot(getPathFromUri(vscode.Uri.file(path.join(repo, getPathFromStr(match[1])))));
 							if (root !== null && !submodules.includes(root)) {
 								submodules.push(root);
 							}
@@ -593,10 +593,10 @@ export class DataSource extends Disposable {
 				}
 			}
 			let path = pathOfPotentialRepo;
-			let first = path.indexOf('/');
+			const first = path.indexOf('/');
 			while (true) {
 				if (pathReturnedByGit === path || pathReturnedByGit === await realpath(path)) return path;
-				let next = path.lastIndexOf('/');
+				const next = path.lastIndexOf('/');
 				if (first !== next && next > -1) {
 					path = path.substring(0, next);
 				} else {
@@ -653,27 +653,27 @@ export class DataSource extends Disposable {
 	 */
 	public async editRemote(repo: string, nameOld: string, nameNew: string, urlOld: string | null, urlNew: string | null, pushUrlOld: string | null, pushUrlNew: string | null) {
 		if (nameOld !== nameNew) {
-			let status = await this.runGitCommand(['remote', 'rename', nameOld, nameNew], repo);
+			const status = await this.runGitCommand(['remote', 'rename', nameOld, nameNew], repo);
 			if (status !== null) return status;
 		}
 
 		if (urlOld !== urlNew) {
-			let args = ['remote', 'set-url', nameNew];
+			const args = ['remote', 'set-url', nameNew];
 			if (urlNew === null) args.push('--delete', urlOld!);
 			else if (urlOld === null) args.push('--add', urlNew);
 			else args.push(urlNew, urlOld);
 
-			let status = await this.runGitCommand(args, repo);
+			const status = await this.runGitCommand(args, repo);
 			if (status !== null) return status;
 		}
 
 		if (pushUrlOld !== pushUrlNew) {
-			let args = ['remote', 'set-url', '--push', nameNew];
+			const args = ['remote', 'set-url', '--push', nameNew];
 			if (pushUrlNew === null) args.push('--delete', pushUrlOld!);
 			else if (pushUrlOld === null) args.push('--add', pushUrlNew);
 			else args.push(pushUrlNew, pushUrlOld);
 
-			let status = await this.runGitCommand(args, repo);
+			const status = await this.runGitCommand(args, repo);
 			if (status !== null) return status;
 		}
 
@@ -726,7 +726,7 @@ export class DataSource extends Disposable {
 	 */
 	public async deleteTag(repo: string, tagName: string, deleteOnRemote: string | null) {
 		if (deleteOnRemote !== null) {
-			let status = await this.runGitCommand(['push', deleteOnRemote, '--delete', tagName], repo);
+			const status = await this.runGitCommand(['push', deleteOnRemote, '--delete', tagName], repo);
 			if (status !== null) return status;
 		}
 		return this.runGitCommand(['tag', '-d', tagName], repo);
@@ -744,7 +744,7 @@ export class DataSource extends Disposable {
 	 * @returns The ErrorInfo from the executed command.
 	 */
 	public fetch(repo: string, remote: string | null, prune: boolean, pruneTags: boolean) {
-		let args = ['fetch', remote === null ? '--all' : remote];
+		const args = ['fetch', remote === null ? '--all' : remote];
 
 		if (prune) {
 			args.push('--prune');
@@ -771,7 +771,7 @@ export class DataSource extends Disposable {
 	 * @returns The ErrorInfo from the executed command.
 	 */
 	public pushBranch(repo: string, branchName: string, remote: string, setUpstream: boolean, mode: GitPushBranchMode) {
-		let args = ['push'];
+		const args = ['push'];
 		args.push(remote, branchName);
 		if (setUpstream) args.push('--set-upstream');
 		if (mode !== GitPushBranchMode.Normal) args.push('--' + mode);
@@ -844,7 +844,7 @@ export class DataSource extends Disposable {
 	 * @returns The ErrorInfo from the executed command.
 	 */
 	public checkoutBranch(repo: string, branchName: string, remoteBranch: string | null) {
-		let args = ['checkout'];
+		const args = ['checkout'];
 		if (remoteBranch === null) args.push(branchName);
 		else args.push('-b', branchName, remoteBranch);
 
@@ -898,9 +898,9 @@ export class DataSource extends Disposable {
 	 * @returns The ErrorInfo from the executed command.
 	 */
 	public async deleteRemoteBranch(repo: string, branchName: string, remote: string) {
-		let remoteStatus = await this.runGitCommand(['push', remote, '--delete', branchName], repo);
+		const remoteStatus = await this.runGitCommand(['push', remote, '--delete', branchName], repo);
 		if (remoteStatus !== null && (new RegExp('remote ref does not exist', 'i')).test(remoteStatus)) {
-			let trackingBranchStatus = await this.runGitCommand(['branch', '-d', '-r', remote + '/' + branchName], repo);
+			const trackingBranchStatus = await this.runGitCommand(['branch', '-d', '-r', remote + '/' + branchName], repo);
 			return trackingBranchStatus === null ? null : 'Branch does not exist on the remote, deleting the remote tracking branch ' + remote + '/' + branchName + '.\n' + trackingBranchStatus;
 		}
 		return remoteStatus;
@@ -1186,7 +1186,7 @@ export class DataSource extends Disposable {
 	 * @returns The ErrorInfo from the executed command.
 	 */
 	public applyStash(repo: string, selector: string, reinstateIndex: boolean) {
-		let args = ['stash', 'apply'];
+		const args = ['stash', 'apply'];
 		if (reinstateIndex) args.push('--index');
 		args.push(selector);
 
@@ -1222,7 +1222,7 @@ export class DataSource extends Disposable {
 	 * @returns The ErrorInfo from the executed command.
 	 */
 	public popStash(repo: string, selector: string, reinstateIndex: boolean) {
-		let args = ['stash', 'pop'];
+		const args = ['stash', 'pop'];
 		if (reinstateIndex) args.push('--index');
 		args.push(selector);
 
@@ -1243,7 +1243,7 @@ export class DataSource extends Disposable {
 			return Promise.resolve(constructIncompatibleGitVersionMessage(this.gitExecutable, GitVersionRequirement.PushStash));
 		}
 
-		let args = ['stash', 'push'];
+		const args = ['stash', 'push'];
 		if (includeUntracked) args.push('--include-untracked');
 		if (message !== '') args.push('--message', message);
 		return this.runGitCommand(args, repo);
@@ -1329,7 +1329,7 @@ export class DataSource extends Disposable {
 	 * @returns The branch data.
 	 */
 	private getBranches(repo: string, showRemoteBranches: boolean, hideRemotes: ReadonlyArray<string>) {
-		let args = ['branch'];
+		const args = ['branch'];
 		if (showRemoteBranches) args.push('-a');
 		args.push('--no-color');
 
@@ -1337,10 +1337,10 @@ export class DataSource extends Disposable {
 		const showRemoteHeads = getConfig().showRemoteHeads;
 
 		return this.spawnGit(args, repo, (stdout) => {
-			let branchData: GitBranchData = { branches: [], head: null, error: null };
-			let lines = stdout.split(EOL_REGEX);
+			const branchData: GitBranchData = { branches: [], head: null, error: null };
+			const lines = stdout.split(EOL_REGEX);
 			for (let i = 0; i < lines.length - 1; i++) {
-				let name = lines[i].substring(2).split(' -> ')[0];
+				const name = lines[i].substring(2).split(' -> ')[0];
 				if (INVALID_BRANCH_REGEXP.test(name) || hideRemotePatterns.some((pattern) => name.startsWith(pattern)) || (!showRemoteHeads && REMOTE_HEAD_BRANCH_REGEXP.test(name))) {
 					continue;
 				}
@@ -1435,10 +1435,10 @@ export class DataSource extends Disposable {
 		return this.execDiff(repo, fromHash, toHash, '--name-status', filter).then((output) => {
 			let records: DiffNameStatusRecord[] = [], i = 0;
 			while (i < output.length && output[i] !== '') {
-				let type = <GitFileStatus>output[i][0];
+				const type = <GitFileStatus>output[i][0];
 				if (type === GitFileStatus.Added || type === GitFileStatus.Deleted || type === GitFileStatus.Modified) {
 					// Add, Modify, or Delete
-					let p = getPathFromStr(output[i + 1]);
+					const p = getPathFromStr(output[i + 1]);
 					records.push({ type: type, oldFilePath: p, newFilePath: p });
 					i += 2;
 				} else if (type === GitFileStatus.Renamed) {
@@ -1465,7 +1465,7 @@ export class DataSource extends Disposable {
 		return this.execDiff(repo, fromHash, toHash, '--numstat', filter).then((output) => {
 			let records: DiffNumStatRecord[] = [], i = 0;
 			while (i < output.length && output[i] !== '') {
-				let fields = output[i].split('\t');
+				const fields = output[i].split('\t');
 				if (fields.length !== 3) break;
 				if (fields[2] !== '') {
 					// Add, Modify, or Delete
@@ -1529,10 +1529,10 @@ export class DataSource extends Disposable {
 		args.push('--');
 
 		return this.spawnGit(args, repo, (stdout) => {
-			let lines = stdout.split(EOL_REGEX);
-			let commits: GitCommitRecord[] = [];
+			const lines = stdout.split(EOL_REGEX);
+			const commits: GitCommitRecord[] = [];
 			for (let i = 0; i < lines.length - 1; i++) {
-				let line = lines[i].split(GIT_LOG_SEPARATOR);
+				const line = lines[i].split(GIT_LOG_SEPARATOR);
 				if (line.length !== 6) break;
 				commits.push({ hash: line[0], parents: line[1] !== '' ? line[1].split(' ') : [], author: line[2], email: line[3], date: parseInt(line[4]), message: line[5] });
 			}
@@ -1549,26 +1549,26 @@ export class DataSource extends Disposable {
 	 * @returns The references data.
 	 */
 	private getRefs(repo: string, showRemoteBranches: boolean, showRemoteHeads: boolean, hideRemotes: ReadonlyArray<string>) {
-		let args = ['show-ref'];
+		const args = ['show-ref'];
 		if (!showRemoteBranches) args.push('--heads', '--tags');
 		args.push('-d', '--head');
 
 		const hideRemotePatterns = hideRemotes.map((remote) => 'refs/remotes/' + remote + '/');
 
 		return this.spawnGit(args, repo, (stdout) => {
-			let refData: GitRefData = { head: null, heads: [], tags: [], remotes: [] };
-			let lines = stdout.split(EOL_REGEX);
+			const refData: GitRefData = { head: null, heads: [], tags: [], remotes: [] };
+			const lines = stdout.split(EOL_REGEX);
 			for (let i = 0; i < lines.length - 1; i++) {
-				let line = lines[i].split(' ');
+				const line = lines[i].split(' ');
 				if (line.length < 2) continue;
 
-				let hash = line.shift()!;
-				let ref = line.join(' ');
+				const hash = line.shift()!;
+				const ref = line.join(' ');
 
 				if (ref.startsWith('refs/heads/')) {
 					refData.heads.push({ hash: hash, name: ref.substring(11) });
 				} else if (ref.startsWith('refs/tags/')) {
-					let annotated = ref.endsWith('^{}');
+					const annotated = ref.endsWith('^{}');
 					refData.tags.push({ hash: hash, name: (annotated ? ref.substring(10, ref.length - 3) : ref.substring(10)), annotated: annotated });
 				} else if (ref.startsWith('refs/remotes/')) {
 					if (!hideRemotePatterns.some((pattern) => ref.startsWith(pattern)) && (showRemoteHeads || !ref.endsWith('/HEAD'))) {
@@ -1612,12 +1612,12 @@ export class DataSource extends Disposable {
 	 */
 	private getStashes(repo: string) {
 		return this.spawnGit(['reflog', '--format=' + this.gitFormatStash, 'refs/stash', '--'], repo, (stdout) => {
-			let lines = stdout.split(EOL_REGEX);
-			let stashes: GitStash[] = [];
+			const lines = stdout.split(EOL_REGEX);
+			const stashes: GitStash[] = [];
 			for (let i = 0; i < lines.length - 1; i++) {
-				let line = lines[i].split(GIT_LOG_SEPARATOR);
+				const line = lines[i].split(GIT_LOG_SEPARATOR);
 				if (line.length !== 7 || line[1] === '') continue;
-				let parentHashes = line[1].split(' ');
+				const parentHashes = line[1].split(' ');
 				stashes.push({
 					hash: line[0],
 					baseHash: parentHashes[0],
@@ -1640,7 +1640,7 @@ export class DataSource extends Disposable {
 	 */
 	private getRemotes(repo: string) {
 		return this.spawnGit(['remote'], repo, (stdout) => {
-			let lines = stdout.split(EOL_REGEX);
+			const lines = stdout.split(EOL_REGEX);
 			lines.pop();
 			return lines;
 		});
@@ -1712,7 +1712,7 @@ export class DataSource extends Disposable {
 	private getStatus(repo: string) {
 		return this.spawnGit(['status', '-s', '--untracked-files=' + (getConfig().showUntrackedFiles ? 'all' : 'no'), '--porcelain', '-z'], repo, (stdout) => {
 			let output = stdout.split('\0'), i = 0;
-			let status: GitStatusFiles = { deleted: [], untracked: [] };
+			const status: GitStatusFiles = { deleted: [], untracked: [] };
 			let path = '', c1 = '', c2 = '';
 			while (i < output.length && output[i] !== '') {
 				if (output[i].length < 4) break;
@@ -1782,7 +1782,7 @@ export class DataSource extends Disposable {
 		}
 
 		return this.spawnGit(args, repo, (stdout) => {
-			let lines = stdout.split('\0');
+			const lines = stdout.split('\0');
 			if (fromHash === toHash) lines.shift();
 			return lines;
 		});

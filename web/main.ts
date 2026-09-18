@@ -274,8 +274,8 @@ class GitGraphView {
 		this.branchDropdown.setOptions(this.getBranchOptions(true), this.currentBranches);
 
 		// Remove hidden remotes that no longer exist
-		let hiddenRemotes = this.gitRepos[this.currentRepo].hideRemotes;
-		let hideRemotes = hiddenRemotes.filter((hiddenRemote) => remotes.includes(hiddenRemote));
+		const hiddenRemotes = this.gitRepos[this.currentRepo].hideRemotes;
+		const hideRemotes = hiddenRemotes.filter((hiddenRemote) => remotes.includes(hiddenRemote));
 		if (hiddenRemotes.length !== hideRemotes.length) {
 			this.saveRepoStateValue(this.currentRepo, 'hideRemotes', hideRemotes);
 		}
@@ -509,7 +509,7 @@ class GitGraphView {
 	public loadAvatar(email: string, image: string) {
 		this.avatars[email] = image;
 		this.saveState();
-		let avatarsElems = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('avatar'), escapedEmail = escapeHtml(email);
+		const avatarsElems = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('avatar'), escapedEmail = escapeHtml(email);
 		for (let i = 0; i < avatarsElems.length; i++) {
 			if (avatarsElems[i].dataset.email === escapedEmail) {
 				avatarsElems[i].innerHTML = '<img class="avatarImg" src="' + image + '">';
@@ -543,7 +543,7 @@ class GitGraphView {
 	}
 
 	private getCommitOfElem(elem: HTMLElement) {
-		let id = parseInt(elem.dataset.id!);
+		const id = parseInt(elem.dataset.id!);
 		return id < this.commits.length ? this.commits[id] : null;
 	}
 
@@ -661,7 +661,7 @@ class GitGraphView {
 	}
 
 	public requestCommitDetails(hash: string, refresh: boolean) {
-		let commit = this.commits[this.commitLookup[hash]];
+		const commit = this.commits[this.commitLookup[hash]];
 		sendMessage({
 			command: 'commitDetails',
 			repo: this.currentRepo,
@@ -674,7 +674,7 @@ class GitGraphView {
 	}
 
 	public requestCommitComparison(hash: string, compareWithHash: string, refresh: boolean) {
-		let commitOrder = this.getCommitOrder(hash, compareWithHash);
+		const commitOrder = this.getCommitOrder(hash, compareWithHash);
 		sendMessage({
 			command: 'compareCommits',
 			repo: this.currentRepo,
@@ -685,7 +685,7 @@ class GitGraphView {
 	}
 
 	private requestAvatars(avatars: { [email: string]: string[] }) {
-		let emails = Object.keys(avatars), remote = this.gitRemotes.length > 0 ? this.gitRemotes.includes('origin') ? 'origin' : this.gitRemotes[0] : null;
+		const emails = Object.keys(avatars), remote = this.gitRemotes.length > 0 ? this.gitRemotes.includes('origin') ? 'origin' : this.gitRemotes[0] : null;
 		for (let i = 0; i < emails.length; i++) {
 			sendMessage({ command: 'fetchAvatar', repo: this.currentRepo, remote: remote, email: emails[i], commits: avatars[emails[i]] });
 		}
@@ -825,10 +825,10 @@ class GitGraphView {
 			'</tr>';
 
 		for (let i = 0; i < this.commits.length; i++) {
-			let commit = this.commits[i];
-			let message = '<span class="text">' + textFormatter.format(commit.message) + '</span>';
-			let date = formatShortDate(commit.date);
-			let branchLabels = getBranchLabels(commit.heads, commit.remotes);
+			const commit = this.commits[i];
+			const message = '<span class="text">' + textFormatter.format(commit.message) + '</span>';
+			const date = formatShortDate(commit.date);
+			const branchLabels = getBranchLabels(commit.heads, commit.remotes);
 			let refBranches = '', refTags = '', j, k, refName, remoteName, refActive, refHtml, branchCheckedOutAtCommit: string | null = null;
 
 			for (j = 0; j < branchLabels.heads.length; j++) {
@@ -988,8 +988,8 @@ class GitGraphView {
 				title: 'Delete Branch' + ELLIPSIS,
 				visible: visibility.delete && this.gitBranchHead !== refName,
 				onClick: () => {
-					let remotesWithBranch = this.gitRemotes.filter(remote => this.gitBranches.includes('remotes/' + remote + '/' + refName));
-					let inputs: DialogInput[] = [{ type: DialogInputType.Checkbox, name: 'Force Delete', value: this.config.dialogDefaults.deleteBranch.forceDelete }];
+					const remotesWithBranch = this.gitRemotes.filter(remote => this.gitBranches.includes('remotes/' + remote + '/' + refName));
+					const inputs: DialogInput[] = [{ type: DialogInputType.Checkbox, name: 'Force Delete', value: this.config.dialogDefaults.deleteBranch.forceDelete }];
 					if (remotesWithBranch.length > 0) {
 						inputs.push({
 							type: DialogInputType.Checkbox,
@@ -1131,9 +1131,9 @@ class GitGraphView {
 				visible: visibility.cherrypick,
 				onClick: () => {
 					const isMerge = commit.parents.length > 1;
-					let inputs: DialogInput[] = [];
+					const inputs: DialogInput[] = [];
 					if (isMerge) {
-						let options = commit.parents.map((hash, index) => ({
+						const options = commit.parents.map((hash, index) => ({
 							name: abbrevCommit(hash) + (typeof this.commitLookup[hash] === 'number' ? ': ' + this.commits[this.commitLookup[hash]].message : ''),
 							value: (index + 1).toString()
 						}));
@@ -1158,7 +1158,7 @@ class GitGraphView {
 					});
 
 					dialog.showForm('Are you sure you want to cherry pick commit <b><i>' + abbrevCommit(hash) + '</i></b>?', inputs, 'Yes, cherry pick', (values) => {
-						let parentIndex = isMerge ? parseInt(<string>values.shift()) : 0;
+						const parentIndex = isMerge ? parseInt(<string>values.shift()) : 0;
 						runAction({
 							command: 'cherrypickCommit',
 							repo: this.currentRepo,
@@ -1174,7 +1174,7 @@ class GitGraphView {
 				visible: visibility.revert,
 				onClick: () => {
 					if (commit.parents.length > 1) {
-						let options = commit.parents.map((hash, index) => ({
+						const options = commit.parents.map((hash, index) => ({
 							name: abbrevCommit(hash) + (typeof this.commitLookup[hash] === 'number' ? ': ' + this.commits[this.commitLookup[hash]].message : ''),
 							value: (index + 1).toString()
 						}));
@@ -1410,9 +1410,9 @@ class GitGraphView {
 				title: 'Delete Tag' + ELLIPSIS,
 				visible: visibility.delete,
 				onClick: () => {
-					let message = 'Are you sure you want to delete the tag <b><i>' + escapeHtml(tagName) + '</i></b>?';
+					const message = 'Are you sure you want to delete the tag <b><i>' + escapeHtml(tagName) + '</i></b>?';
 					if (this.gitRemotes.length > 1) {
-						let options = [{ name: 'Don\'t delete on any remote', value: '-1' }];
+						const options = [{ name: 'Don\'t delete on any remote', value: '-1' }];
 						this.gitRemotes.forEach((remote, i) => options.push({ name: remote, value: i.toString() }));
 						dialog.showSelect(message + '<br>Do you also want to delete the tag on a remote:', '-1', options, 'Yes, delete', remoteIndex => {
 							this.deleteTagAction(tagName, remoteIndex !== '-1' ? this.gitRemotes[parseInt(remoteIndex)] : null);
@@ -1474,7 +1474,7 @@ class GitGraphView {
 	}
 
 	private getUncommittedChangesContextMenuActions(target: DialogTarget & CommitTarget): ContextMenuActions {
-		let visibility = this.config.contextMenuActionsVisibility.uncommittedChanges;
+		const visibility = this.config.contextMenuActionsVisibility.uncommittedChanges;
 		return [[
 			{
 				title: 'Stash uncommitted changes' + ELLIPSIS,
@@ -1690,7 +1690,7 @@ class GitGraphView {
 			{ type: DialogInputType.Checkbox, name: 'Launch Interactive Rebase in new Terminal', value: this.config.dialogDefaults.rebase.interactive },
 			{ type: DialogInputType.Checkbox, name: 'Ignore Date', value: this.config.dialogDefaults.rebase.ignoreDate, info: 'Only applicable to a non-interactive rebase.' }
 		], 'Yes, rebase', (values) => {
-			let interactive = <boolean>values[0];
+			const interactive = <boolean>values[0];
 			runAction({ command: 'rebase', repo: this.currentRepo, obj: obj, actionOn: actionOn, ignoreDate: <boolean>values[1], interactive: interactive }, interactive ? 'Launching Interactive Rebase' : 'Rebasing on ' + actionOn);
 		}, target);
 	}
@@ -1699,7 +1699,7 @@ class GitGraphView {
 	/* Table Utils */
 
 	private makeTableResizable() {
-		let colHeadersElem = document.getElementById('tableColHeaders')!, cols = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('tableColHeader');
+		const colHeadersElem = document.getElementById('tableColHeaders')!, cols = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('tableColHeader');
 		let columnWidths: GG.ColumnWidth[], mouseX = -1, col = -1, colIndex = -1;
 
 		const makeTableFixedLayout = () => {
@@ -1714,13 +1714,13 @@ class GitGraphView {
 		};
 
 		for (let i = 0; i < cols.length; i++) {
-			let col = parseInt(cols[i].dataset.col!);
+			const col = parseInt(cols[i].dataset.col!);
 			cols[i].innerHTML += (i > 0 ? '<span class="resizeCol left" data-col="' + (col - 1) + '"></span>' : '') + (i < cols.length - 1 ? '<span class="resizeCol right" data-col="' + col + '"></span>' : '');
 		}
 
-		let cWidths = this.gitRepos[this.currentRepo].columnWidths;
+		const cWidths = this.gitRepos[this.currentRepo].columnWidths;
 		if (cWidths === null) { // Initialise auto column layout if it is the first time viewing the repo.
-			let defaults = this.config.defaultColumnVisibility;
+			const defaults = this.config.defaultColumnVisibility;
 			columnWidths = [COLUMN_AUTO, COLUMN_AUTO, defaults.date ? COLUMN_AUTO : COLUMN_HIDDEN, defaults.author ? COLUMN_AUTO : COLUMN_HIDDEN, defaults.commit ? COLUMN_AUTO : COLUMN_HIDDEN];
 			this.saveColumnWidths(columnWidths);
 		} else {
@@ -1735,7 +1735,7 @@ class GitGraphView {
 			this.tableElem.className = 'autoLayout';
 
 			let colWidth = cols[0].offsetWidth, graphWidth = this.graph.getContentWidth();
-			let maxWidth = Math.round(this.viewElem.clientWidth * 0.333);
+			const maxWidth = Math.round(this.viewElem.clientWidth * 0.333);
 			if (Math.max(graphWidth, colWidth) > maxWidth) {
 				this.graph.limitMaxWidth(maxWidth);
 				graphWidth = maxWidth;
@@ -1753,7 +1753,7 @@ class GitGraphView {
 
 		const processResizingColumn: EventListener = (e) => {
 			if (col > -1) {
-				let mouseEvent = <MouseEvent>e;
+				const mouseEvent = <MouseEvent>e;
 				let mouseDeltaX = mouseEvent.clientX - mouseX;
 
 				if (col === 0) {
@@ -1763,7 +1763,7 @@ class GitGraphView {
 					cols[0].style.width = columnWidths[0] + 'px';
 					this.graph.limitMaxWidth(columnWidths[0] + COLUMN_LEFT_RIGHT_PADDING);
 				} else {
-					let colWidth = col !== 1 ? columnWidths[col] : cols[1].clientWidth - COLUMN_LEFT_RIGHT_PADDING;
+					const colWidth = col !== 1 ? columnWidths[col] : cols[1].clientWidth - COLUMN_LEFT_RIGHT_PADDING;
 					let nextCol = col + 1;
 					while (columnWidths[nextCol] === COLUMN_HIDDEN) nextCol++;
 
@@ -1795,9 +1795,9 @@ class GitGraphView {
 			while (columnWidths[col] === COLUMN_HIDDEN) col--;
 			mouseX = (<MouseEvent>e).clientX;
 
-			let isAuto = columnWidths[0] === COLUMN_AUTO;
+			const isAuto = columnWidths[0] === COLUMN_AUTO;
 			for (let i = 0; i < cols.length; i++) {
-				let curCol = parseInt(cols[i].dataset.col!);
+				const curCol = parseInt(cols[i].dataset.col!);
 				if (isAuto && curCol !== 1) columnWidths[curCol] = cols[i].clientWidth - COLUMN_LEFT_RIGHT_PADDING;
 				if (curCol === col) colIndex = i;
 			}
@@ -1866,17 +1866,17 @@ class GitGraphView {
 	}
 
 	public getColumnVisibility() {
-		let colWidths = this.gitRepos[this.currentRepo].columnWidths;
+		const colWidths = this.gitRepos[this.currentRepo].columnWidths;
 		if (colWidths !== null) {
 			return { date: colWidths[1] !== COLUMN_HIDDEN, author: colWidths[2] !== COLUMN_HIDDEN, commit: colWidths[3] !== COLUMN_HIDDEN };
 		} else {
-			let defaults = this.config.defaultColumnVisibility;
+			const defaults = this.config.defaultColumnVisibility;
 			return { date: defaults.date, author: defaults.author, commit: defaults.commit };
 		}
 	}
 
 	private getNumColumns() {
-		let colVisibility = this.getColumnVisibility();
+		const colVisibility = this.getColumnVisibility();
 		return 2 + (colVisibility.date ? 1 : 0) + (colVisibility.author ? 1 : 0) + (colVisibility.commit ? 1 : 0);
 	}
 
@@ -1918,7 +1918,7 @@ class GitGraphView {
 		const elem = findCommitElemWithId(getCommitElems(), this.getCommitId(hash));
 		if (elem === null) return;
 
-		let elemTop = this.controlsElem.clientHeight + elem.offsetTop;
+		const elemTop = this.controlsElem.clientHeight + elem.offsetTop;
 		if (alwaysCenterCommit || elemTop - 8 < this.viewElem.scrollTop || elemTop + 32 - this.viewElem.clientHeight > this.viewElem.scrollTop) {
 			this.viewElem.scroll(0, this.controlsElem.clientHeight + elem.offsetTop + 12 - this.viewElem.clientHeight / 2);
 		}
@@ -1972,7 +1972,7 @@ class GitGraphView {
 		setSelectionBackgroundColorExists();
 
 		(new MutationObserver(() => {
-			let ff = getVSCodeStyle(CSS_PROP_FONT_FAMILY),
+			const ff = getVSCodeStyle(CSS_PROP_FONT_FAMILY),
 				eff = getVSCodeStyle(CSS_PROP_EDITOR_FONT_FAMILY),
 				fmc = getVSCodeStyle(CSS_PROP_FIND_MATCH_HIGHLIGHT_BACKGROUND),
 				sbc = !!getVSCodeStyle(CSS_PROP_SELECTION_BACKGROUND);
@@ -1996,7 +1996,7 @@ class GitGraphView {
 	}
 
 	private observeViewScroll() {
-		let active = this.viewElem.scrollTop > 0, timeout: NodeJS.Timer | null = null;
+		let active = this.viewElem.scrollTop > 0, timeout: ReturnType<typeof setTimeout> | null = null;
 		this.scrollShadowElem.className = active ? CLASS_ACTIVE : '';
 		this.viewElem.addEventListener('scroll', () => {
 			const scrollTop = this.viewElem.scrollTop;
@@ -2416,7 +2416,7 @@ class GitGraphView {
 
 	public createFileTree(gitFiles: ReadonlyArray<GG.GitFileChange>, codeReview: GG.CodeReview | null) {
 		let contents: FileTreeFolderContents = {}, i, j, path, absPath, cur: FileTreeFolder;
-		let files: FileTreeFolder = { type: 'folder', name: '', folderPath: '', contents: contents, open: true, reviewed: true };
+		const files: FileTreeFolder = { type: 'folder', name: '', folderPath: '', contents: contents, open: true, reviewed: true };
 
 		for (i = 0; i < gitFiles.length; i++) {
 			cur = files;
@@ -2587,7 +2587,7 @@ class GitGraphView {
 
 		if (!refresh) {
 			if (isDocked) {
-				let elemTop = this.controlsElem.clientHeight + expandedCommit.commitElem.offsetTop;
+				const elemTop = this.controlsElem.clientHeight + expandedCommit.commitElem.offsetTop;
 				if (elemTop - 8 < this.viewElem.scrollTop) {
 					// Commit is above what is visible on screen
 					this.viewElem.scroll(0, elemTop - 8);
@@ -2596,7 +2596,7 @@ class GitGraphView {
 					this.viewElem.scroll(0, elemTop - this.viewElem.clientHeight + 32);
 				}
 			} else {
-				let elemTop = this.controlsElem.clientHeight + elem.offsetTop, cdvHeight = this.gitRepos[this.currentRepo].cdvHeight;
+				const elemTop = this.controlsElem.clientHeight + elem.offsetTop, cdvHeight = this.gitRepos[this.currentRepo].cdvHeight;
 				if (this.config.commitDetailsView.autoCenter) {
 					// Center Commit Detail View setting is enabled
 					// elemTop - commit height [24px] + (commit details view height + commit height [24px]) / 2 - (view height) / 2
@@ -2655,7 +2655,7 @@ class GitGraphView {
 				document.getElementById('cdvCodeReview')!.addEventListener('click', (e) => {
 					const expandedCommit = this.expandedCommit;
 					if (expandedCommit === null || e.target === null) return;
-					let sourceElem = <HTMLElement>(<Element>e.target).closest('#cdvCodeReview')!;
+					const sourceElem = <HTMLElement>(<Element>e.target).closest('#cdvCodeReview')!;
 					if (sourceElem.classList.contains(CLASS_ACTIVE)) {
 						sendMessage({ command: 'endCodeReview', repo: this.currentRepo, id: expandedCommit.codeReview!.id });
 						this.endCodeReview();
@@ -2702,14 +2702,14 @@ class GitGraphView {
 			}
 		}
 
-		let heightPx = height + 'px';
+		const heightPx = height + 'px';
 		elem.style.height = heightPx;
 		if (isDocked) this.viewElem.style.bottom = heightPx;
 	}
 
 	private setCdvDivider() {
-		let percent = (this.gitRepos[this.currentRepo].cdvDivider * 100).toFixed(2) + '%';
-		let summaryElem = document.getElementById('cdvSummary'), dividerElem = document.getElementById('cdvDivider'), filesElem = document.getElementById('cdvFiles');
+		const percent = (this.gitRepos[this.currentRepo].cdvDivider * 100).toFixed(2) + '%';
+		const summaryElem = document.getElementById('cdvSummary'), dividerElem = document.getElementById('cdvDivider'), filesElem = document.getElementById('cdvFiles');
 		if (summaryElem !== null) summaryElem.style.width = percent;
 		if (dividerElem !== null) dividerElem.style.left = percent;
 		if (filesElem !== null) filesElem.style.left = percent;
@@ -2720,7 +2720,7 @@ class GitGraphView {
 
 		const processResizingCdvHeight: EventListener = (e) => {
 			if (prevY < 0) return;
-			let delta = (<MouseEvent>e).pageY - prevY, isDocked = this.isCdvDocked(), windowHeight = window.innerHeight;
+			const delta = (<MouseEvent>e).pageY - prevY, isDocked = this.isCdvDocked(), windowHeight = window.innerHeight;
 			prevY = (<MouseEvent>e).pageY;
 			let height = this.gitRepos[this.currentRepo].cdvHeight + (isDocked ? -delta : delta);
 			if (height < 100) height = 100;
@@ -2729,7 +2729,7 @@ class GitGraphView {
 
 			if (this.gitRepos[this.currentRepo].cdvHeight !== height) {
 				this.gitRepos[this.currentRepo].cdvHeight = height;
-				let elem = document.getElementById('cdv');
+				const elem = document.getElementById('cdv');
 				if (elem !== null) this.setCdvHeight(elem, isDocked);
 				if (!isDocked) this.renderGraph();
 			}
@@ -2966,13 +2966,13 @@ class GitGraphView {
 		};
 
 		addListenerToClass('fileTreeFolder', 'click', (e) => {
-			let expandedCommit = this.expandedCommit;
+			const expandedCommit = this.expandedCommit;
 			if (expandedCommit === null || expandedCommit.fileTree === null || e.target === null) return;
 
-			let sourceElem = <HTMLElement>(<Element>e.target).closest('.fileTreeFolder');
-			let parent = sourceElem.parentElement!;
+			const sourceElem = <HTMLElement>(<Element>e.target).closest('.fileTreeFolder');
+			const parent = sourceElem.parentElement!;
 			parent.classList.toggle('closed');
-			let isOpen = !parent.classList.contains('closed');
+			const isOpen = !parent.classList.contains('closed');
 			parent.children[0].children[0].innerHTML = isOpen ? SVG_ICONS.openFolder : SVG_ICONS.closedFolder;
 			parent.children[1].classList.toggle('hidden');
 			alterFileTreeFolderOpen(expandedCommit.fileTree, decodeURIComponent(sourceElem.dataset.folderpath!), isOpen);
@@ -3105,10 +3105,10 @@ class GitGraphView {
 
 	private renderCdvFileViewTypeBtns() {
 		if (this.expandedCommit === null) return;
-		let treeBtnElem = document.getElementById('cdvFileViewTypeTree'), listBtnElem = document.getElementById('cdvFileViewTypeList');
+		const treeBtnElem = document.getElementById('cdvFileViewTypeTree'), listBtnElem = document.getElementById('cdvFileViewTypeList');
 		if (treeBtnElem === null || listBtnElem === null) return;
 
-		let listView = this.getFileViewType() === GG.FileViewType.List;
+		const listView = this.getFileViewType() === GG.FileViewType.List;
 		alterClass(treeBtnElem, CLASS_ACTIVE, !listView);
 		alterClass(listBtnElem, CLASS_ACTIVE, listView);
 	}
@@ -3149,7 +3149,7 @@ class GitGraphView {
 	}
 
 	private saveAndRenderCodeReview(codeReview: GG.CodeReview | null) {
-		let filesElem = document.getElementById('cdvFiles');
+		const filesElem = document.getElementById('cdvFiles');
 		if (this.expandedCommit === null || this.expandedCommit.fileTree === null || filesElem === null) return;
 
 		this.expandedCommit.codeReview = codeReview;
@@ -3161,10 +3161,10 @@ class GitGraphView {
 
 	private renderCodeReviewBtn() {
 		if (this.expandedCommit === null) return;
-		let btnElem = document.getElementById('cdvCodeReview');
+		const btnElem = document.getElementById('cdvCodeReview');
 		if (btnElem === null) return;
 
-		let active = this.expandedCommit.codeReview !== null;
+		const active = this.expandedCommit.codeReview !== null;
 		alterClass(btnElem, CLASS_ACTIVE, active);
 		btnElem.title = (active ? 'End' : 'Start') + ' Code Review';
 	}
@@ -3558,11 +3558,11 @@ function getCurrentFolderInfo(folder: FileTreeFolder, name: string, pathSeg: str
 
 function generateFileListHtml(folder: FileTreeFolder, gitFiles: ReadonlyArray<GG.GitFileChange>, lastViewedFile: string | null, fileContextMenuOpen: number, isUncommitted: boolean) {
 	const sortLeaves = (folder: FileTreeFolder, folderPath: string) => {
-		let keys = sortFolderKeys(folder);
+		const keys = sortFolderKeys(folder);
 		let items: { relPath: string, leaf: FileTreeLeaf }[] = [];
 		for (let i = 0; i < keys.length; i++) {
-			let cur = folder.contents[keys[i]];
-			let relPath = (folderPath !== '' ? folderPath + '/' : '') + cur.name;
+			const cur = folder.contents[keys[i]];
+			const relPath = (folderPath !== '' ? folderPath + '/' : '') + cur.name;
 			if (cur.type === 'folder') {
 				items = items.concat(sortLeaves(cur, relPath));
 			} else {
@@ -3571,7 +3571,7 @@ function generateFileListHtml(folder: FileTreeFolder, gitFiles: ReadonlyArray<GG
 		}
 		return items;
 	};
-	let sortedLeaves = sortLeaves(folder, '');
+	const sortedLeaves = sortLeaves(folder, '');
 	let html = '';
 	for (let i = 0; i < sortedLeaves.length; i++) {
 		html += generateFileTreeLeafHtml(sortedLeaves[i].relPath, sortedLeaves[i].leaf, gitFiles, lastViewedFile, fileContextMenuOpen, isUncommitted);
@@ -3580,7 +3580,7 @@ function generateFileListHtml(folder: FileTreeFolder, gitFiles: ReadonlyArray<GG
 }
 
 function generateFileTreeLeafHtml(name: string, leaf: FileTreeLeaf, gitFiles: ReadonlyArray<GG.GitFileChange>, lastViewedFile: string | null, fileContextMenuOpen: number, isUncommitted: boolean) {
-	let encodedName = encodeURIComponent(name), escapedName = escapeHtml(name);
+	const encodedName = encodeURIComponent(name), escapedName = escapeHtml(name);
 	if (leaf.type === 'file') {
 		const fileTreeFile = gitFiles[leaf.index];
 		const textFile = fileTreeFile.additions !== null && fileTreeFile.deletions !== null;
@@ -3632,7 +3632,7 @@ function alterFileTreeFileReviewed(folder: FileTreeFolder, filePath: string, rev
 	for (i = folders.length - 1; i >= 0; i--) {
 		let keys = Object.keys(folders[i].contents), entireFolderReviewed = true;
 		for (let j = 0; j < keys.length; j++) {
-			let cur = folders[i].contents[keys[j]];
+			const cur = folders[i].contents[keys[j]];
 			if ((cur.type === 'folder' || cur.type === 'file') && !cur.reviewed) {
 				entireFolderReviewed = false;
 				break;
@@ -3644,9 +3644,9 @@ function alterFileTreeFileReviewed(folder: FileTreeFolder, filePath: string, rev
 
 function setFileTreeReviewed(folder: FileTreeFolder, reviewed: boolean) {
 	folder.reviewed = reviewed;
-	let keys = Object.keys(folder.contents);
+	const keys = Object.keys(folder.contents);
 	for (let i = 0; i < keys.length; i++) {
-		let cur = folder.contents[keys[i]];
+		const cur = folder.contents[keys[i]];
 		if (cur.type === 'folder') {
 			setFileTreeReviewed(cur, reviewed);
 		} else if (cur.type === 'file') {
@@ -3658,9 +3658,9 @@ function setFileTreeReviewed(folder: FileTreeFolder, reviewed: boolean) {
 function calcFileTreeFoldersReviewed(folder: FileTreeFolder) {
 	const calc = (folder: FileTreeFolder) => {
 		let reviewed = true;
-		let keys = Object.keys(folder.contents);
+		const keys = Object.keys(folder.contents);
 		for (let i = 0; i < keys.length; i++) {
-			let cur = folder.contents[keys[i]];
+			const cur = folder.contents[keys[i]];
 			if ((cur.type === 'folder' && !calc(cur)) || (cur.type === 'file' && !cur.reviewed)) reviewed = false;
 		}
 		folder.reviewed = reviewed;
@@ -3670,13 +3670,13 @@ function calcFileTreeFoldersReviewed(folder: FileTreeFolder) {
 }
 
 function updateFileTreeHtml(elem: HTMLElement, folder: FileTreeFolder) {
-	let ul = getChildUl(elem);
+	const ul = getChildUl(elem);
 	if (ul === null) return;
 
 	for (let i = 0; i < ul.children.length; i++) {
-		let li = <HTMLLIElement>ul.children[i];
-		let pathSeg = decodeURIComponent(li.dataset.pathseg!);
-		let child = getChildByPathSegment(folder, pathSeg);
+		const li = <HTMLLIElement>ul.children[i];
+		const pathSeg = decodeURIComponent(li.dataset.pathseg!);
+		const child = getChildByPathSegment(folder, pathSeg);
 		if (child.type === 'folder') {
 			alterClass(<HTMLSpanElement>li.children[0], CLASS_PENDING_REVIEW, !child.reviewed);
 			updateFileTreeHtml(li, child);
@@ -3689,14 +3689,14 @@ function updateFileTreeHtml(elem: HTMLElement, folder: FileTreeFolder) {
 function updateFileTreeHtmlFileReviewed(elem: HTMLElement, folder: FileTreeFolder, filePath: string) {
 	let path = filePath;
 	const update = (elem: HTMLElement, folder: FileTreeFolder) => {
-		let ul = getChildUl(elem);
+		const ul = getChildUl(elem);
 		if (ul === null) return;
 
 		for (let i = 0; i < ul.children.length; i++) {
-			let li = <HTMLLIElement>ul.children[i];
-			let pathSeg = decodeURIComponent(li.dataset.pathseg!);
+			const li = <HTMLLIElement>ul.children[i];
+			const pathSeg = decodeURIComponent(li.dataset.pathseg!);
 			if (path === pathSeg || path.startsWith(pathSeg + '/')) {
-				let child = getChildByPathSegment(folder, pathSeg);
+				const child = getChildByPathSegment(folder, pathSeg);
 				if (child.type === 'folder') {
 					alterClass(<HTMLSpanElement>li.children[0], CLASS_PENDING_REVIEW, !child.reviewed);
 					path = path.substring(pathSeg.length + 1);
@@ -3712,11 +3712,11 @@ function updateFileTreeHtmlFileReviewed(elem: HTMLElement, folder: FileTreeFolde
 }
 
 function getFilesInTree(folder: FileTreeFolder, gitFiles: ReadonlyArray<GG.GitFileChange>) {
-	let files: string[] = [];
+	const files: string[] = [];
 	const scanFolder = (folder: FileTreeFolder) => {
-		let keys = Object.keys(folder.contents);
+		const keys = Object.keys(folder.contents);
 		for (let i = 0; i < keys.length; i++) {
-			let cur = folder.contents[keys[i]];
+			const cur = folder.contents[keys[i]];
 			if (cur.type === 'folder') {
 				scanFolder(cur);
 			} else if (cur.type === 'file') {
@@ -3729,7 +3729,7 @@ function getFilesInTree(folder: FileTreeFolder, gitFiles: ReadonlyArray<GG.GitFi
 }
 
 function sortFolderKeys(folder: FileTreeFolder) {
-	let keys = Object.keys(folder.contents);
+	const keys = Object.keys(folder.contents);
 	keys.sort((a, b) => folder.contents[a].type !== 'file' && folder.contents[b].type === 'file' ? -1 : folder.contents[a].type === 'file' && folder.contents[b].type !== 'file' ? 1 : folder.contents[a].name.localeCompare(folder.contents[b].name));
 	return keys;
 }
@@ -3822,9 +3822,9 @@ function getRepoDropdownOptions(repos: Readonly<GG.GitRepoSet>) {
 	const paths: string[] = [], names: string[] = [], distinctNames: string[] = [], firstSep: number[] = [];
 	const resolveAmbiguous = (indexes: number[]) => {
 		// Find ambiguous names within indexes
-		let firstOccurrence: { [name: string]: number } = {}, ambiguous: { [name: string]: number[] } = {};
+		const firstOccurrence: { [name: string]: number } = {}, ambiguous: { [name: string]: number[] } = {};
 		for (let i = 0; i < indexes.length; i++) {
-			let name = distinctNames[indexes[i]];
+			const name = distinctNames[indexes[i]];
 			if (typeof firstOccurrence[name] === 'number') {
 				// name is ambiguous
 				if (typeof ambiguous[name] === 'undefined') {
@@ -3837,13 +3837,13 @@ function getRepoDropdownOptions(repos: Readonly<GG.GitRepoSet>) {
 			}
 		}
 
-		let ambiguousNames = Object.keys(ambiguous);
+		const ambiguousNames = Object.keys(ambiguous);
 		for (let i = 0; i < ambiguousNames.length; i++) {
 			// For each ambiguous name, resolve the ambiguous indexes
-			let ambiguousIndexes = ambiguous[ambiguousNames[i]], retestIndexes = [];
+			const ambiguousIndexes = ambiguous[ambiguousNames[i]], retestIndexes = [];
 			for (let j = 0; j < ambiguousIndexes.length; j++) {
-				let ambiguousIndex = ambiguousIndexes[j];
-				let nextSep = paths[ambiguousIndex].lastIndexOf('/', paths[ambiguousIndex].length - distinctNames[ambiguousIndex].length - 2);
+				const ambiguousIndex = ambiguousIndexes[j];
+				const nextSep = paths[ambiguousIndex].lastIndexOf('/', paths[ambiguousIndex].length - distinctNames[ambiguousIndex].length - 2);
 				if (firstSep[ambiguousIndex] < nextSep) {
 					// prepend the addition path and retest
 					distinctNames[ambiguousIndex] = paths[ambiguousIndex].substring(nextSep + 1);
@@ -3876,7 +3876,7 @@ function getRepoDropdownOptions(repos: Readonly<GG.GitRepoSet>) {
 			distinctNames.push(repoPaths[i]);
 		} else {
 			paths.push(repoPaths[i].endsWith('/') ? repoPaths[i].substring(0, repoPaths[i].length - 1) : repoPaths[i]); // Remove trailing slash if it exists
-			let name = paths[i].substring(paths[i].lastIndexOf('/') + 1);
+			const name = paths[i].substring(paths[i].lastIndexOf('/') + 1);
 			names.push(name);
 			distinctNames.push(name);
 			indexes.push(i);
@@ -3892,11 +3892,11 @@ function getRepoDropdownOptions(repos: Readonly<GG.GitRepoSet>) {
 			hint = '';
 		} else {
 			// Hint path is the prefix of the distinctName before the common suffix with name
-			let hintPath = distinctNames[i].substring(0, distinctNames[i].length - names[i].length - 1);
+			const hintPath = distinctNames[i].substring(0, distinctNames[i].length - names[i].length - 1);
 
 			// Keep two informative directories
-			let hintComps = hintPath.split('/');
-			let keepDirs = hintComps[0] !== '' ? 2 : 3;
+			const hintComps = hintPath.split('/');
+			const keepDirs = hintComps[0] !== '' ? 2 : 3;
 			if (hintComps.length > keepDirs) hintComps.splice(keepDirs, hintComps.length - keepDirs, '...');
 
 			// Construct the hint
@@ -3919,10 +3919,10 @@ function getBranchLabels(heads: ReadonlyArray<string>, remotes: ReadonlyArray<GG
 		headLookup[heads[i]] = i;
 	}
 	if (initialState.config.referenceLabels.combineLocalAndRemoteBranchLabels) {
-		let remainingRemoteLabels = [];
+		const remainingRemoteLabels = [];
 		for (let i = 0; i < remotes.length; i++) {
 			if (remotes[i].remote !== null) { // If the remote of the remote branch ref is known
-				let branchName = remotes[i].name.substring(remotes[i].remote!.length + 1);
+				const branchName = remotes[i].name.substring(remotes[i].remote!.length + 1);
 				if (typeof headLookup[branchName] === 'number') {
 					headLabels[headLookup[branchName]].remotes.push(remotes[i].remote!);
 					continue;
@@ -3939,7 +3939,7 @@ function getBranchLabels(heads: ReadonlyArray<string>, remotes: ReadonlyArray<GG
 
 function findCommitElemWithId(elems: HTMLCollectionOf<HTMLElement>, id: number | null) {
 	if (id === null) return null;
-	let findIdStr = id.toString();
+	const findIdStr = id.toString();
 	for (let i = 0; i < elems.length; i++) {
 		if (findIdStr === elems[i].dataset.id) return elems[i];
 	}

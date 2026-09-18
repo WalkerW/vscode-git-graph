@@ -49,10 +49,10 @@ export function pathWithTrailingSlash(path: string) {
  * @returns TRUE => Path is in workspace, FALSE => Path isn't in workspace.
  */
 export function isPathInWorkspace(path: string) {
-	let rootsExact = [], rootsFolder = [], workspaceFolders = vscode.workspace.workspaceFolders;
+	const rootsExact = [], rootsFolder = [], workspaceFolders = vscode.workspace.workspaceFolders;
 	if (typeof workspaceFolders !== 'undefined') {
 		for (let i = 0; i < workspaceFolders.length; i++) {
-			let tmpPath = getPathFromUri(workspaceFolders[i].uri);
+			const tmpPath = getPathFromUri(workspaceFolders[i].uri);
 			rootsExact.push(tmpPath);
 			rootsFolder.push(pathWithTrailingSlash(tmpPath));
 		}
@@ -78,21 +78,21 @@ export function realpath(path: string, native: boolean = false) {
  * @returns The transformed path.
  */
 export async function resolveToSymbolicPath(path: string) {
-	let workspaceFolders = vscode.workspace.workspaceFolders;
+	const workspaceFolders = vscode.workspace.workspaceFolders;
 	if (typeof workspaceFolders !== 'undefined') {
 		for (let i = 0; i < workspaceFolders.length; i++) {
-			let rootSymPath = getPathFromUri(workspaceFolders[i].uri);
-			let rootCanonicalPath = await realpath(rootSymPath);
+			const rootSymPath = getPathFromUri(workspaceFolders[i].uri);
+			const rootCanonicalPath = await realpath(rootSymPath);
 			if (path === rootCanonicalPath) {
 				return rootSymPath;
 			} else if (path.startsWith(rootCanonicalPath + '/')) {
 				return rootSymPath + path.substring(rootCanonicalPath.length);
 			} else if (rootCanonicalPath.startsWith(path + '/')) {
 				let symPath = rootSymPath;
-				let first = symPath.indexOf('/');
+				const first = symPath.indexOf('/');
 				while (true) {
 					if (path === symPath || path === await realpath(symPath)) return symPath;
-					let next = symPath.lastIndexOf('/');
+					const next = symPath.lastIndexOf('/');
 					if (first !== next && next > -1) {
 						symPath = symPath.substring(0, next);
 					} else {
@@ -417,13 +417,13 @@ export async function openFile(repo: string, filePath: string, hash: string | nu
  */
 export function viewDiff(repo: string, fromHash: string, toHash: string, oldFilePath: string, newFilePath: string, type: GitFileStatus) {
 	if (type !== GitFileStatus.Untracked) {
-		let abbrevFromHash = abbrevCommit(fromHash), abbrevToHash = toHash !== UNCOMMITTED ? abbrevCommit(toHash) : 'Present', pathComponents = newFilePath.split('/');
-		let desc = fromHash === toHash
+		const abbrevFromHash = abbrevCommit(fromHash), abbrevToHash = toHash !== UNCOMMITTED ? abbrevCommit(toHash) : 'Present', pathComponents = newFilePath.split('/');
+		const desc = fromHash === toHash
 			? fromHash === UNCOMMITTED
 				? 'Uncommitted'
 				: (type === GitFileStatus.Added ? 'Added in ' + abbrevToHash : type === GitFileStatus.Deleted ? 'Deleted in ' + abbrevToHash : abbrevFromHash + '^ ↔ ' + abbrevToHash)
 			: (type === GitFileStatus.Added ? 'Added between ' + abbrevFromHash + ' & ' + abbrevToHash : type === GitFileStatus.Deleted ? 'Deleted between ' + abbrevFromHash + ' & ' + abbrevToHash : abbrevFromHash + ' ↔ ' + abbrevToHash);
-		let title = pathComponents[pathComponents.length - 1] + ' (' + desc + ')';
+		const title = pathComponents[pathComponents.length - 1] + ' (' + desc + ')';
 		if (fromHash === UNCOMMITTED) fromHash = 'HEAD';
 
 		return vscode.commands.executeCommand('vscode.diff', encodeDiffDocUri(repo, oldFilePath, fromHash === toHash ? fromHash + '^' : fromHash, type, DiffSide.Old), encodeDiffDocUri(repo, newFilePath, toHash, type, DiffSide.New), title, {
@@ -570,7 +570,7 @@ export function evalPromises<X, Y>(data: X[], maxParallel: number, createPromise
 		} else {
 			let results: Y[] = new Array(data.length), nextPromise = 0, rejected = false, completed = 0;
 			function startNext() {
-				let cur = nextPromise;
+				const cur = nextPromise;
 				nextPromise++;
 				createPromise(data[cur]).then(result => {
 					if (!rejected) {
@@ -606,19 +606,27 @@ export function resolveSpawnOutput(cmd: cp.ChildProcess) {
 			});
 			cmd.on('exit', (code) => {
 				if (resolved) return;
-				resolve({ code: code, error: null });
+				resolve({ code: code ?? -1, error: null });
 				resolved = true;
 			});
 		}),
 		new Promise<Buffer>((resolve) => {
 			// stdout promise
-			let buffers: Buffer[] = [];
+			const buffers: Buffer[] = [];
+			if (cmd.stdout === null) {
+				resolve(Buffer.alloc(0));
+				return;
+			}
 			cmd.stdout.on('data', (b: Buffer) => { buffers.push(b); });
 			cmd.stdout.on('close', () => resolve(Buffer.concat(buffers)));
 		}),
 		new Promise<string>((resolve) => {
 			// stderr promise
 			let stderr = '';
+			if (cmd.stderr === null) {
+				resolve(stderr);
+				return;
+			}
 			cmd.stderr.on('data', (d) => { stderr += d; });
 			cmd.stderr.on('close', () => resolve(stderr));
 		})
@@ -713,11 +721,11 @@ function findSystemGitWin32(pathBase?: string) {
 		: Promise.reject<GitExecutable>();
 }
 async function findGitWin32InPath() {
-	let dirs = (process.env['PATH'] || '').split(';');
+	const dirs = (process.env['PATH'] || '').split(';');
 	dirs.unshift(process.cwd());
 
 	for (let i = 0; i < dirs.length; i++) {
-		let file = path.join(dirs[i], 'git.exe');
+		const file = path.join(dirs[i], 'git.exe');
 		if (await isExecutable(file)) {
 			try {
 				return await getGitExecutable(file);

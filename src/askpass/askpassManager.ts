@@ -63,7 +63,7 @@ export class AskpassManager extends Disposable {
 		req.setEncoding('utf8');
 		req.on('data', (d) => reqData += d);
 		req.on('end', () => {
-			let data = JSON.parse(reqData) as AskpassRequest;
+			const data = JSON.parse(reqData) as AskpassRequest;
 			vscode.window.showInputBox({ placeHolder: data.request, prompt: 'Git Graph: ' + data.host, password: /password/i.test(data.request), ignoreFocusOut: true }).then(result => {
 				res.writeHead(200);
 				res.end(JSON.stringify(result || ''));

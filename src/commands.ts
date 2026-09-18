@@ -134,7 +134,7 @@ export class CommandManager extends Disposable {
 
 		vscode.window.showOpenDialog({ canSelectFiles: false, canSelectFolders: true, canSelectMany: false }).then(uris => {
 			if (uris && uris.length > 0) {
-				let path = getPathFromUri(uris[0]);
+				const path = getPathFromUri(uris[0]);
 				if (isPathInWorkspace(path)) {
 					this.repoManager.registerRepo(path, false).then(status => {
 						if (status.error === null) {
@@ -209,7 +209,7 @@ export class CommandManager extends Disposable {
 
 			const lastActiveRepo = this.extensionState.getLastActiveRepo();
 			if (lastActiveRepo !== null) {
-				let lastActiveRepoIndex = items.findIndex((item) => item.description === lastActiveRepo);
+				const lastActiveRepoIndex = items.findIndex((item) => item.description === lastActiveRepo);
 				if (lastActiveRepoIndex > -1) {
 					const item = items.splice(lastActiveRepoIndex, 1)[0];
 					items.unshift(item);

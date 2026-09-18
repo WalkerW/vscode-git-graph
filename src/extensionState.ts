@@ -143,7 +143,7 @@ export class ExtensionState extends Disposable {
 			this.setLastActiveRepo(newRepo);
 		}
 
-		let reviews = this.getCodeReviews();
+		const reviews = this.getCodeReviews();
 		if (typeof reviews[oldRepo] !== 'undefined') {
 			reviews[newRepo] = reviews[oldRepo];
 			delete reviews[oldRepo];
@@ -281,7 +281,7 @@ export class ExtensionState extends Disposable {
 	 * @param avatar The details of the avatar.
 	 */
 	public saveAvatar(email: string, avatar: Avatar) {
-		let avatars = this.getAvatarCache();
+		const avatars = this.getAvatarCache();
 		avatars[email] = avatar;
 		this.updateGlobalState(AVATAR_CACHE, avatars);
 	}
@@ -291,7 +291,7 @@ export class ExtensionState extends Disposable {
 	 * @param email The email address of the avatar to remove.
 	 */
 	public removeAvatarFromCache(email: string) {
-		let avatars = this.getAvatarCache();
+		const avatars = this.getAvatarCache();
 		delete avatars[email];
 		this.updateGlobalState(AVATAR_CACHE, avatars);
 	}
@@ -328,7 +328,7 @@ export class ExtensionState extends Disposable {
 	 * @returns The Code Review that was started.
 	 */
 	public startCodeReview(repo: string, id: string, files: string[], lastViewedFile: string | null) {
-		let reviews = this.getCodeReviews();
+		const reviews = this.getCodeReviews();
 		if (typeof reviews[repo] === 'undefined') reviews[repo] = {};
 		reviews[repo][id] = { lastActive: (new Date()).getTime(), lastViewedFile: lastViewedFile, remainingFiles: files };
 		return this.setCodeReviews(reviews).then((err) => ({
@@ -343,7 +343,7 @@ export class ExtensionState extends Disposable {
 	 * @param id The ID of the Code Review.
 	 */
 	public endCodeReview(repo: string, id: string) {
-		let reviews = this.getCodeReviews();
+		const reviews = this.getCodeReviews();
 		removeCodeReview(reviews, repo, id);
 		return this.setCodeReviews(reviews);
 	}
@@ -355,7 +355,7 @@ export class ExtensionState extends Disposable {
 	 * @returns The Code Review.
 	 */
 	public getCodeReview(repo: string, id: string) {
-		let reviews = this.getCodeReviews();
+		const reviews = this.getCodeReviews();
 		if (typeof reviews[repo] !== 'undefined' && typeof reviews[repo][id] !== 'undefined') {
 			reviews[repo][id].lastActive = (new Date()).getTime();
 			this.setCodeReviews(reviews);

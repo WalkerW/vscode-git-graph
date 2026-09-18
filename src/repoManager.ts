@@ -187,7 +187,7 @@ export class RepoManager extends Disposable {
 	 */
 	public registerRepo(path: string, loadRepo: boolean) {
 		return new Promise<{ root: string | null, error: string | null }>(async resolve => {
-			let root = await this.dataSource.repoRoot(path);
+			const root = await this.dataSource.repoRoot(path);
 			if (root === null) {
 				resolve({ root: null, error: 'The folder "' + path + '" is not a Git repository.' });
 			} else if (typeof this.repos[root] !== 'undefined') {
@@ -259,7 +259,7 @@ export class RepoManager extends Disposable {
 	 * @returns An array of the paths of all known repositories contained in the specified folder.
 	 */
 	private getReposInFolder(path: string) {
-		let pathFolder = pathWithTrailingSlash(path), repoPaths = Object.keys(this.repos), reposInFolder: string[] = [];
+		const pathFolder = pathWithTrailingSlash(path), repoPaths = Object.keys(this.repos), reposInFolder: string[] = [];
 		for (let i = 0; i < repoPaths.length; i++) {
 			if (repoPaths[i] === path || repoPaths[i].startsWith(pathFolder)) reposInFolder.push(repoPaths[i]);
 		}
@@ -278,8 +278,8 @@ export class RepoManager extends Disposable {
 		}
 
 		// Check to see if a known repository contains a symlink that resolves the repo
-		let canonicalRepo = await realpath(repo);
-		let repoPaths = Object.keys(this.repos);
+		const canonicalRepo = await realpath(repo);
+		const repoPaths = Object.keys(this.repos);
 		for (let i = 0; i < repoPaths.length; i++) {
 			if (canonicalRepo === (await realpath(repoPaths[i]))) {
 				return repoPaths[i];
@@ -334,7 +334,7 @@ export class RepoManager extends Disposable {
 	 * @returns TRUE => At least one repository was removed, FALSE => No repositories were removed.
 	 */
 	private removeReposWithinFolder(path: string) {
-		let reposInFolder = this.getReposInFolder(path);
+		const reposInFolder = this.getReposInFolder(path);
 		for (let i = 0; i < reposInFolder.length; i++) {
 			this.removeRepo(reposInFolder[i]);
 		}
@@ -347,7 +347,7 @@ export class RepoManager extends Disposable {
 	 * @returns TRUE => Path is within a known repository, FALSE => Path isn't within a known repository.
 	 */
 	private isDirectoryWithinRepos(path: string) {
-		let repoPaths = Object.keys(this.repos);
+		const repoPaths = Object.keys(this.repos);
 		for (let i = 0; i < repoPaths.length; i++) {
 			if (path === repoPaths[i] || path.startsWith(pathWithTrailingSlash(repoPaths[i]))) return true;
 		}
@@ -486,7 +486,7 @@ export class RepoManager extends Disposable {
 						if (err) {
 							resolve(false);
 						} else {
-							let dirs = [];
+							const dirs = [];
 							for (let i = 0; i < dirContents.length; i++) {
 								if (dirContents[i] !== '.git' && await isDirectory(directory + '/' + dirContents[i])) {
 									dirs.push(directory + '/' + dirContents[i]);
@@ -535,7 +535,7 @@ export class RepoManager extends Disposable {
 	 * Start watching each of the folders in the current workspace for changes.
 	 */
 	private startWatchingFolders() {
-		let rootFolders = vscode.workspace.workspaceFolders;
+		const rootFolders = vscode.workspace.workspaceFolders;
 		if (typeof rootFolders !== 'undefined') {
 			for (let i = 0; i < rootFolders.length; i++) {
 				this.startWatchingFolder(getPathFromUri(rootFolders[i].uri));

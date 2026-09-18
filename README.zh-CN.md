@@ -12,9 +12,12 @@
 
 ## 本地开发环境
 
-- 已验证环境：Node.js `18.20.8`、npm `10.8.2`、Git `2.55.0`。
-- 安装依赖：`npm install`。仓库提交 `package-lock.json`，以避免旧版传递依赖随时间漂移而导致 TypeScript 4.0.2 无法编译。
+- 已验证环境：Node.js `18.20.8`、npm `10.8.2`、Git `2.55.0`；CI 使用相同的 Node 精确版本。
+- 安装依赖：首次本地安装使用 `npm install`；复现 CI 或排查依赖问题时使用 `npm ci`。仓库提交 `package-lock.json`，确保依赖树可重复安装。
+- 工具链：TypeScript `5.9.3`、ESLint `9.39.5`（flat config）、Jest `29.7.0` 与 ts-jest `29.4.12`。测试断言使用 `toHaveBeenCalled*`，不再依赖已废弃的 `toBeCalled*` 别名；全局采用 legacy fake timers，以保持旧测试对 `Date` 和计时器 spy 的语义。
+- webview 编译目标为 ES2015（`web/tsconfig.json` 的 `target: es6`），打包器已升级以支持该语法；保留现有全局命名空间架构，模块化迁移将作为独立的 UI 重构阶段处理。
 - 验证命令：`npm run compile`、`npm test`。当前基线应为 15 个测试套件、1269 个测试全部通过。
+- GitHub Actions 使用 `actions/checkout@v6`、`actions/setup-node@v7`、npm 缓存与 `npm ci`；不再使用已停止维护的 Node 12 与 Actions v1。
 - 本项目源文件采用 CRLF 换行；修改 TypeScript 文件后应运行 ESLint 或项目编译命令，避免混入 LF。
 - Node.js 18 会弃用旧的 `url.parse()`；头像下载已使用 WHATWG `URL` API，启动扩展时不应再出现 `DEP0169` 告警。
 
