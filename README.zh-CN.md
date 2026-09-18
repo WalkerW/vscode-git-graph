@@ -15,6 +15,7 @@
 - 已验证环境：Node.js `18.20.8`、npm `10.8.2`、Git `2.55.0`；CI 使用相同的 Node 精确版本。
 - 安装依赖：首次本地安装使用 `npm install`；复现 CI 或排查依赖问题时使用 `npm ci`。仓库提交 `package-lock.json`，确保依赖树可重复安装。
 - 工具链：TypeScript `5.9.3`、ESLint `9.39.5`（flat config）、Jest `29.7.0` 与 ts-jest `29.4.12`。测试断言使用 `toHaveBeenCalled*`，不再依赖已废弃的 `toBeCalled*` 别名；全局采用 legacy fake timers，以保持旧测试对 `Date` 和计时器 spy 的语义。
+- 测试脚本启用 Jest `--forceExit`：历史测试的轮询辅助函数会保留计时器句柄；断言完成后应立即退出。常规验证不使用 `--detectOpenHandles`，因为它与 legacy fake timers 的计时器语义冲突。
 - webview 编译目标为 ES2015（`web/tsconfig.json` 的 `target: es6`），打包器已升级以支持该语法；保留现有全局命名空间架构，模块化迁移将作为独立的 UI 重构阶段处理。
 - 验证命令：`npm run compile`、`npm test`。当前基线应为 15 个测试套件、1269 个测试全部通过。
 - GitHub Actions 使用 `actions/checkout@v6`、`actions/setup-node@v7`、npm 缓存与 `npm ci`；不再使用已停止维护的 Node 12 与 Actions v1。
@@ -24,6 +25,21 @@
 ### 文档同步约定
 
 每次改变用户可见功能、Git 版本兼容性、开发工具链、配置项或已知限制时，必须同步更新本文件；对应的测试与实现也应在同一提交中完成。纯重构且不改变行为时，可仅在提交说明中注明无需更新本文档。
+
+## 源码目录
+
+根目录保留扩展清单、许可证、说明文档和 ESLint/Jest 配置，这是 VS Code、npm 与 GitHub Actions 的标准发现位置；不将这些文件移动到任意子目录。
+
+- `src/extension.ts`：唯一扩展入口，`package.json` 的 `main` 指向其编译结果。
+- `src/application/`：命令注册与应用层协调；`commandManager.ts` 负责命令处理。
+- `src/git/`：Git 命令、仓库管理、仓库文件监听与 askpass 集成。
+- `src/ui/`：Git Graph Webview、差异文档提供器和状态栏入口。
+- `src/services/`：独立服务，例如头像下载与缓存。
+- `src/platform/`：VS Code 持久化状态与输出日志等平台适配。
+- `src/lifecycle/`：安装、升级、卸载生命周期上报。
+- `src/utils/`：通用队列、事件与 disposable 工具；`src/types.ts` 为共享领域类型。
+
+为避免破坏既有测试 mock 与外部导入，`src` 根目录保留少量同名公共导出层，它们只重新导出上述目录的实现，不承载业务逻辑。测试文件继续以实现名称命名，便于按功能定位。
 
 ## 当前已支持的功能
 

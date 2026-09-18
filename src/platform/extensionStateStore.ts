@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 import * as vscode from 'vscode';
-import { Avatar, AvatarCache } from './avatarManager';
-import { getConfig } from './config';
-import { BooleanOverride, CodeReview, ErrorInfo, FileViewType, GitGraphViewGlobalState, GitGraphViewWorkspaceState, GitRepoSet, GitRepoState, RepoCommitOrdering } from './types';
-import { GitExecutable, getPathFromStr } from './utils';
-import { Disposable } from './utils/disposable';
-import { Event } from './utils/event';
+import { Avatar, AvatarCache } from '../avatarManager';
+import { getConfig } from '../config';
+import { BooleanOverride, CodeReview, ErrorInfo, FileViewType, GitGraphViewGlobalState, GitGraphViewWorkspaceState, GitRepoSet, GitRepoState, RepoCommitOrdering } from '../types';
+import { GitExecutable, getPathFromStr } from '../utils';
+import { Disposable } from '../utils/disposable';
+import { Event } from '../utils/event';
 
 const AVATAR_STORAGE_FOLDER = '/avatars';
 const AVATAR_CACHE = 'avatarCache';

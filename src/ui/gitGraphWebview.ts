@@ -1,15 +1,15 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { AvatarManager } from './avatarManager';
-import { getConfig } from './config';
-import { DataSource, GitConfigKey } from './dataSource';
-import { ExtensionState } from './extensionState';
-import { Logger } from './logger';
-import { RepoFileWatcher } from './repoFileWatcher';
-import { RepoManager } from './repoManager';
-import { ErrorInfo, GitConfigLocation, GitGraphViewInitialState, GitPushBranchMode, GitRepoSet, LoadGitGraphViewTo, RequestMessage, ResponseMessage, TabIconColourTheme } from './types';
-import { UNABLE_TO_FIND_GIT_MSG, UNCOMMITTED, archive, copyFilePathToClipboard, copyToClipboard, createPullRequest, getNonce, openExtensionSettings, openExternalUrl, openFile, showErrorMessage, viewDiff, viewDiffWithWorkingFile, viewFileAtRevision, viewScm } from './utils';
-import { Disposable, toDisposable } from './utils/disposable';
+import { AvatarManager } from '../avatarManager';
+import { getConfig } from '../config';
+import { DataSource, GitConfigKey } from '../gitDataSource';
+import { ExtensionState } from '../extensionStateStore';
+import { Logger } from '../logger';
+import { RepoFileWatcher } from '../repositoryFileWatcher';
+import { RepoManager } from '../repositoryManager';
+import { ErrorInfo, GitConfigLocation, GitGraphViewInitialState, GitPushBranchMode, GitRepoSet, LoadGitGraphViewTo, RequestMessage, ResponseMessage, TabIconColourTheme } from '../types';
+import { UNABLE_TO_FIND_GIT_MSG, UNCOMMITTED, archive, copyFilePathToClipboard, copyToClipboard, createPullRequest, getNonce, openExtensionSettings, openExternalUrl, openFile, showErrorMessage, viewDiff, viewDiffWithWorkingFile, viewFileAtRevision, viewScm } from '../utils';
+import { Disposable, toDisposable } from '../utils/disposable';
 
 /**
  * Manages the Git Graph View.

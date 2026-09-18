@@ -1,12 +1,12 @@
 import * as vscode from './mocks/vscode';
 jest.mock('vscode', () => vscode, { virtual: true });
-jest.mock('../src/dataSource');
+jest.mock('../src/gitDataSource');
 jest.mock('../src/logger');
 
 import * as path from 'path';
 import { ConfigurationChangeEvent } from 'vscode';
-import { DataSource } from '../src/dataSource';
-import { DiffDocProvider, DiffSide, decodeDiffDocUri, encodeDiffDocUri } from '../src/diffDocProvider';
+import { DataSource } from '../src/gitDataSource';
+import { DiffDocProvider, DiffSide, decodeDiffDocUri, encodeDiffDocUri } from '../src/diffDocumentProvider';
 import { Logger } from '../src/logger';
 import { GitFileStatus } from '../src/types';
 import { GitExecutable, UNCOMMITTED } from '../src/utils';

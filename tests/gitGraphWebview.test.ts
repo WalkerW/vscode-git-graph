@@ -1,19 +1,19 @@
 import * as vscode from './mocks/vscode';
 jest.mock('vscode', () => vscode, { virtual: true });
 jest.mock('../src/avatarManager');
-jest.mock('../src/dataSource');
-jest.mock('../src/extensionState');
+jest.mock('../src/gitDataSource');
+jest.mock('../src/extensionStateStore');
 jest.mock('../src/logger');
-jest.mock('../src/repoManager');
+jest.mock('../src/repositoryManager');
 
 import * as path from 'path';
 import { ConfigurationChangeEvent } from 'vscode';
 import { AvatarEvent, AvatarManager } from '../src/avatarManager';
-import { DataSource } from '../src/dataSource';
-import { ExtensionState } from '../src/extensionState';
-import { GitGraphView, standardiseCspSource } from '../src/gitGraphView';
+import { DataSource } from '../src/gitDataSource';
+import { ExtensionState } from '../src/extensionStateStore';
+import { GitGraphView, standardiseCspSource } from '../src/gitGraphWebview';
 import { Logger } from '../src/logger';
-import { RepoChangeEvent, RepoManager } from '../src/repoManager';
+import { RepoChangeEvent, RepoManager } from '../src/repositoryManager';
 import { CodeReview, CommitOrdering, GitCommitStash, GitConfigLocation, GitFileStatus, GitGraphViewGlobalState, GitGraphViewWorkspaceState, GitPushBranchMode, GitResetMode, MergeActionOn, PullRequestConfig, PullRequestProvider, RebaseActionOn, RequestMessage, ResponseMessage, TagType } from '../src/types';
 import * as utils from '../src/utils';
 import { EventEmitter } from '../src/utils/event';

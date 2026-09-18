@@ -2,7 +2,7 @@ import * as date from './mocks/date';
 import { mockSpyOnSpawn } from './mocks/spawn';
 import * as vscode from './mocks/vscode';
 jest.mock('vscode', () => vscode, { virtual: true });
-jest.mock('../src/askpass/askpassManager');
+jest.mock('../src/git/askpass/askpassManager');
 jest.mock('../src/logger');
 
 import * as cp from 'child_process';
@@ -10,7 +10,7 @@ import * as fs from 'fs';
 import iconv = require('iconv-lite');
 import * as path from 'path';
 import { ConfigurationChangeEvent } from 'vscode';
-import { DataSource, GitConfigKey } from '../src/dataSource';
+import { DataSource, GitConfigKey } from '../src/gitDataSource';
 import { Logger } from '../src/logger';
 import { CommitOrdering, GitConfigLocation, GitPushBranchMode, GitResetMode, GitSignature, GitSignatureStatus, MergeActionOn, RebaseActionOn, TagType } from '../src/types';
 import * as utils from '../src/utils';

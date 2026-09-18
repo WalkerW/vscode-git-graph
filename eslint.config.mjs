@@ -43,13 +43,13 @@ export default tseslint.config(
 		}
 	},
 	{
-		files: ['src/repoManager.ts'],
+		files: ['src/git/repositoryManager.ts'],
 		rules: {
 			'@typescript-eslint/no-namespace': 'off'
 		}
 	},
 	{
-		files: ['src/askpass/**/*.ts'],
+		files: ['src/git/askpass/**/*.ts'],
 		rules: {
 			'no-console': 'off'
 		}

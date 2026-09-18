@@ -4,8 +4,8 @@ jest.mock('../src/logger');
 
 import { ConfigurationChangeEvent } from 'vscode';
 import { Logger } from '../src/logger';
-import { RepoChangeEvent } from '../src/repoManager';
-import { StatusBarItem } from '../src/statusBarItem';
+import { RepoChangeEvent } from '../src/repositoryManager';
+import { StatusBarItem } from '../src/gitGraphStatusBarItem';
 import { EventEmitter } from '../src/utils/event';
 
 const vscodeStatusBarItem = vscode.mocks.statusBarItem;

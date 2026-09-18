@@ -4,7 +4,7 @@ const path = require('path');
 
 const SRC_DIRECTORY = './src';
 const OUT_DIRECTORY = './out';
-const ASKPASS_DIRECTORY = 'askpass';
+const ASKPASS_DIRECTORY = path.join('git', 'askpass');
 
 // Adjust any scripts that require the Node.js File System Module to use the Node.js version (as Electron overrides the fs module with its own version of the module)
 fs.readdirSync(OUT_DIRECTORY).forEach((fileName) => {

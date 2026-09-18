@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
-import { getConfig } from './config';
-import { Logger } from './logger';
-import { RepoChangeEvent } from './repoManager';
-import { Disposable } from './utils/disposable';
-import { Event } from './utils/event';
+import { getConfig } from '../config';
+import { Logger } from '../logger';
+import { RepoChangeEvent } from '../repositoryManager';
+import { Disposable } from '../utils/disposable';
+import { Event } from '../utils/event';
 
 /**
  * Manages the Git Graph Status Bar Item, which allows users to open the Git Graph View from the Visual Studio Code Status Bar.

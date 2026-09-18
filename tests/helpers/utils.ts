@@ -1,4 +1,4 @@
-import { DEFAULT_REPO_STATE } from '../../src/extensionState';
+import { DEFAULT_REPO_STATE } from '../../src/extensionStateStore';
 import { GitRepoState } from '../../src/types';
 
 export function mockRepoState(custom: Partial<GitRepoState> = {}): GitRepoState {

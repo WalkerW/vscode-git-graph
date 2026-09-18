@@ -3,9 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { getConfig } from './config';
-import { DataSource } from './dataSource';
-import { DiffSide, encodeDiffDocUri } from './diffDocProvider';
-import { ExtensionState } from './extensionState';
+import { DataSource } from './gitDataSource';
+import { DiffSide, encodeDiffDocUri } from './diffDocumentProvider';
+import { ExtensionState } from './extensionStateStore';
 import { ErrorInfo, GitFileStatus, GitRepoSet, PullRequestConfig, PullRequestProvider, RepoDropdownOrder } from './types';
 
 export const UNCOMMITTED = '*';

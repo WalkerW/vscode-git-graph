@@ -1,16 +1,16 @@
 import * as os from 'os';
 import * as vscode from 'vscode';
-import { AvatarManager } from './avatarManager';
-import { getConfig } from './config';
-import { DataSource } from './dataSource';
-import { DiffDocProvider, decodeDiffDocUri } from './diffDocProvider';
-import { CodeReviewData, CodeReviews, ExtensionState } from './extensionState';
-import { GitGraphView } from './gitGraphView';
-import { Logger } from './logger';
-import { RepoManager } from './repoManager';
-import { GitExecutable, UNABLE_TO_FIND_GIT_MSG, VsCodeVersionRequirement, abbrevCommit, abbrevText, copyToClipboard, doesVersionMeetRequirement, getExtensionVersion, getPathFromUri, getRelativeTimeDiff, getRepoName, getSortedRepositoryPaths, isPathInWorkspace, openFile, resolveToSymbolicPath, showErrorMessage, showInformationMessage } from './utils';
-import { Disposable } from './utils/disposable';
-import { Event } from './utils/event';
+import { AvatarManager } from '../avatarManager';
+import { getConfig } from '../config';
+import { DataSource } from '../gitDataSource';
+import { DiffDocProvider, decodeDiffDocUri } from '../diffDocumentProvider';
+import { CodeReviewData, CodeReviews, ExtensionState } from '../extensionStateStore';
+import { GitGraphView } from '../gitGraphWebview';
+import { Logger } from '../logger';
+import { RepoManager } from '../repositoryManager';
+import { GitExecutable, UNABLE_TO_FIND_GIT_MSG, VsCodeVersionRequirement, abbrevCommit, abbrevText, copyToClipboard, doesVersionMeetRequirement, getExtensionVersion, getPathFromUri, getRelativeTimeDiff, getRepoName, getSortedRepositoryPaths, isPathInWorkspace, openFile, resolveToSymbolicPath, showErrorMessage, showInformationMessage } from '../utils';
+import { Disposable } from '../utils/disposable';
+import { Event } from '../utils/event';
 
 /**
  * Manages the registration and execution of Git Graph Commands.

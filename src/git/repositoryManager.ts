@@ -1,15 +1,15 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { getConfig } from './config';
-import { DataSource } from './dataSource';
-import { DEFAULT_REPO_STATE, ExtensionState } from './extensionState';
-import { Logger } from './logger';
-import { BooleanOverride, ErrorInfo, FileViewType, GitRepoSet, GitRepoState, PullRequestConfig, PullRequestConfigBase, PullRequestProvider, RepoCommitOrdering } from './types';
-import { evalPromises, getPathFromStr, getPathFromUri, getRepoName, pathWithTrailingSlash, realpath, showErrorMessage, showInformationMessage } from './utils';
-import { BufferedQueue } from './utils/bufferedQueue';
-import { Disposable, toDisposable } from './utils/disposable';
-import { Event, EventEmitter } from './utils/event';
+import { getConfig } from '../config';
+import { DataSource } from '../gitDataSource';
+import { DEFAULT_REPO_STATE, ExtensionState } from '../extensionStateStore';
+import { Logger } from '../logger';
+import { BooleanOverride, ErrorInfo, FileViewType, GitRepoSet, GitRepoState, PullRequestConfig, PullRequestConfigBase, PullRequestProvider, RepoCommitOrdering } from '../types';
+import { evalPromises, getPathFromStr, getPathFromUri, getRepoName, pathWithTrailingSlash, realpath, showErrorMessage, showInformationMessage } from '../utils';
+import { BufferedQueue } from '../utils/bufferedQueue';
+import { Disposable, toDisposable } from '../utils/disposable';
+import { Event, EventEmitter } from '../utils/event';
 
 export interface RepoChangeEvent {
 	readonly repos: GitRepoSet;

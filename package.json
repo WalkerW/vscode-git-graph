@@ -1513,7 +1513,7 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
-		"vscode:uninstall": "node ./out/life-cycle/uninstall.js",
+		"vscode:uninstall": "node ./out/lifecycle/uninstall.js",
 		"clean": "node ./.vscode/clean.js",
 		"compile": "npm run lint && npm run clean && npm run compile-src && npm run compile-web",
 		"compile-src": "tsc -p ./src && node ./.vscode/package-src.js",
@@ -1522,8 +1522,8 @@
 		"lint": "eslint --max-warnings 0 ./src ./tests ./web",
 		"package": "vsce package",
 		"package-and-install": "npm run package && node ./.vscode/install-package.js",
-		"test": "jest --verbose",
-		"test-and-report-coverage": "jest --verbose --coverage"
+		"test": "jest --verbose --forceExit",
+		"test-and-report-coverage": "jest --verbose --coverage --forceExit"
 	},
 	"dependencies": {
 		"iconv-lite": "0.6.3"

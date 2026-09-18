@@ -4,7 +4,7 @@ jest.mock('vscode', () => vscode, { virtual: true });
 jest.mock('fs');
 
 import * as fs from 'fs';
-import { ExtensionState } from '../src/extensionState';
+import { ExtensionState } from '../src/extensionStateStore';
 import { BooleanOverride, FileViewType, GitGraphViewGlobalState, GitGraphViewWorkspaceState, GitRepoState, RepoCommitOrdering } from '../src/types';
 import { GitExecutable } from '../src/utils';
 import { EventEmitter } from '../src/utils/event';

@@ -11,8 +11,8 @@ import * as http from 'http';
 import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { getNonce } from '../utils';
-import { Disposable, toDisposable } from '../utils/disposable';
+import { getNonce } from '../../utils';
+import { Disposable, toDisposable } from '../../utils/disposable';
 
 export interface AskpassEnvironment {
 	GIT_ASKPASS: string;

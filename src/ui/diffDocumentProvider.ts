@@ -1,9 +1,9 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { DataSource } from './dataSource';
-import { GitFileStatus } from './types';
-import { UNCOMMITTED, getPathFromStr, showErrorMessage } from './utils';
-import { Disposable, toDisposable } from './utils/disposable';
+import { DataSource } from '../gitDataSource';
+import { GitFileStatus } from '../types';
+import { UNCOMMITTED, getPathFromStr, showErrorMessage } from '../utils';
+import { Disposable, toDisposable } from '../utils/disposable';
 
 export const enum DiffSide {
 	Old,

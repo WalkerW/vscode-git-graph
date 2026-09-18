@@ -4,7 +4,7 @@ jest.mock('vscode', () => vscode, { virtual: true });
 jest.mock('../src/logger');
 
 import { Logger } from '../src/logger';
-import { RepoFileWatcher } from '../src/repoFileWatcher';
+import { RepoFileWatcher } from '../src/repositoryFileWatcher';
 
 let logger: Logger;
 let spyOnLog: jest.SpyInstance;

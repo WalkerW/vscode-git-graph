@@ -1,14 +1,14 @@
 import * as vscode from 'vscode';
 import { AvatarManager } from './avatarManager';
-import { CommandManager } from './commands';
+import { CommandManager } from './commandManager';
 import { getConfig } from './config';
-import { DataSource } from './dataSource';
-import { DiffDocProvider } from './diffDocProvider';
-import { ExtensionState } from './extensionState';
-import { onStartUp } from './life-cycle/startup';
+import { DataSource } from './gitDataSource';
+import { DiffDocProvider } from './diffDocumentProvider';
+import { ExtensionState } from './extensionStateStore';
+import { onStartUp } from './lifecycle/startup';
 import { Logger } from './logger';
-import { RepoManager } from './repoManager';
-import { StatusBarItem } from './statusBarItem';
+import { RepoManager } from './repositoryManager';
+import { StatusBarItem } from './gitGraphStatusBarItem';
 import { GitExecutable, UNABLE_TO_FIND_GIT_MSG, findGit, getGitExecutableFromPaths, showErrorMessage, showInformationMessage } from './utils';
 import { EventEmitter } from './utils/event';
 
